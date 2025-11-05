@@ -1,5 +1,4 @@
 import Link from 'next/link';
-import Image from 'next/image';
 import {
   Card,
   CardContent,
@@ -8,7 +7,6 @@ import {
   CardTitle,
 } from '@/components/ui/card';
 import { calculatorCategories } from '@/lib/calculators';
-import { PlaceHolderImages } from '@/lib/placeholder-images';
 import AiSuggestions from '@/components/ai-suggestions';
 import { ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -18,32 +16,17 @@ function CategoryCard({
 }: {
   category: (typeof calculatorCategories)[0];
 }) {
-  const image = PlaceHolderImages.find((img) => img.id === category.image.id);
-
   return (
     <Link href={`/calculators/${category.slug}`}>
       <Card className="group h-full overflow-hidden transition-all hover:shadow-lg hover:-translate-y-1">
-        <CardHeader className="p-0">
-          <div className="relative h-40 w-full">
-            {image && (
-              <Image
-                src={image.imageUrl}
-                alt={image.description}
-                fill
-                className="object-cover transition-transform group-hover:scale-105"
-                data-ai-hint={image.imageHint}
-              />
-            )}
-          </div>
-        </CardHeader>
-        <CardContent className="p-4">
-          <div className="flex items-center gap-2">
-            <category.icon className="h-6 w-6 text-primary" />
+        <CardHeader className="p-4">
+          <div className="flex items-center gap-3">
+            <category.icon className="h-8 w-8 text-primary" />
             <CardTitle className="text-xl">{category.name}</CardTitle>
           </div>
-          <CardDescription className="mt-2">
-            {category.description}
-          </CardDescription>
+        </CardHeader>
+        <CardContent className="p-4 pt-0">
+          <CardDescription>{category.description}</CardDescription>
         </CardContent>
       </Card>
     </Link>

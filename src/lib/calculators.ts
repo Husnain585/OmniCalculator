@@ -26,10 +26,6 @@ export interface CalculatorCategory {
   description: string;
   icon: LucideIcon;
   calculators: Calculator[];
-  image: {
-    id: string;
-    hint: string;
-  };
 }
 
 export const calculatorCategories: CalculatorCategory[] = [
@@ -38,7 +34,6 @@ export const calculatorCategories: CalculatorCategory[] = [
     slug: 'finance',
     description: 'Calculators for loans, investments, and savings.',
     icon: PiggyBank,
-    image: { id: 'finance', hint: 'money charts' },
     calculators: [
       {
         name: 'Simple Interest',
@@ -54,7 +49,6 @@ export const calculatorCategories: CalculatorCategory[] = [
     slug: 'health',
     description: 'Monitor your health and wellness with these tools.',
     icon: HeartPulse,
-    image: { id: 'health', hint: 'health medical' },
     calculators: [
       {
         name: 'BMI Calculator',
@@ -70,7 +64,6 @@ export const calculatorCategories: CalculatorCategory[] = [
     slug: 'math',
     description: 'Solve mathematical problems from basic to advanced.',
     icon: Sigma,
-    image: { id: 'math', hint: 'mathematics equations' },
     calculators: [],
   },
   {
@@ -78,7 +71,6 @@ export const calculatorCategories: CalculatorCategory[] = [
     slug: 'fitness',
     description: 'Track your fitness goals and progress.',
     icon: Dumbbell,
-    image: { id: 'fitness', hint: 'gym workout' },
     calculators: [],
   },
   {
@@ -86,7 +78,6 @@ export const calculatorCategories: CalculatorCategory[] = [
     slug: 'construction',
     description: 'Calculators for building and construction projects.',
     icon: HardHat,
-    image: { id: 'construction', hint: 'construction site' },
     calculators: [],
   },
   {
@@ -94,7 +85,6 @@ export const calculatorCategories: CalculatorCategory[] = [
     slug: 'other',
     description: 'A collection of other useful calculators.',
     icon: FunctionSquare,
-    image: { id: 'other', hint: 'abstract tools' },
     calculators: [],
   },
 ];

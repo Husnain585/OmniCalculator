@@ -17,8 +17,6 @@ import {
   BreadcrumbSeparator,
 } from '@/components/ui/breadcrumb';
 import { ArrowRight } from 'lucide-react';
-import Image from 'next/image';
-import { PlaceHolderImages } from '@/lib/placeholder-images';
 
 export default function CalculatorPage({
   params,
@@ -87,7 +85,6 @@ export default function CalculatorPage({
   if (slug.length === 1) {
     const category = calculatorCategories.find((cat) => cat.slug === slug[0]);
     if (!category) notFound();
-    const image = PlaceHolderImages.find((img) => img.id === category.image.id);
 
     return (
       <div>
@@ -106,25 +103,14 @@ export default function CalculatorPage({
             </BreadcrumbItem>
           </BreadcrumbList>
         </Breadcrumb>
-        <div className="relative h-64 rounded-lg overflow-hidden mb-8">
-          {image && (
-            <Image
-              src={image.imageUrl}
-              alt={image.description}
-              fill
-              className="object-cover"
-              data-ai-hint={image.imageHint}
-            />
-          )}
-          <div className="absolute inset-0 bg-black/50 flex flex-col items-center justify-center text-center p-4">
-            <category.icon className="h-12 w-12 text-white mb-4" />
-            <h1 className="text-4xl font-bold text-white font-headline">
+        <div className="mb-8 text-center">
+            <category.icon className="h-12 w-12 text-primary mb-4 inline-block" />
+            <h1 className="text-4xl font-bold text-foreground font-headline">
               {category.name}
             </h1>
-            <p className="mt-2 text-lg text-slate-200">
+            <p className="mt-2 text-lg text-muted-foreground">
               {category.description}
             </p>
-          </div>
         </div>
 
         <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">

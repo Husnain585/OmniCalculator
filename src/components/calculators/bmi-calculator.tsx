@@ -1,0 +1,184 @@
+"use client";
+
+import { useState } from 'react';
+import { useForm, SubmitHandler } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import * as z from 'zod';
+import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from '@/components/ui/form';
+import { Input } from '@/components/ui/input';
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from '@/components/ui/accordion';
+import { Code, Share2, Calculator as CalculatorIcon } from 'lucide-react';
+
+const formSchema = z.object({
+  height: z.coerce.number().positive('Height must be positive'),
+  weight: z.coerce.number().positive('Weight must be positive'),
+});
+
+type BmiFormValues = z.infer<typeof formSchema>;
+
+export default function BmiCalculator() {
+  const [bmi, setBmi] = useState<number | null>(null);
+  const [bmiCategory, setBmiCategory] = useState<string>('');
+
+  const form = useForm<BmiFormValues>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      height: undefined,
+      weight: undefined,
+    },
+  });
+
+  const onSubmit: SubmitHandler<BmiFormValues> = (data) => {
+    const heightInMeters = data.height / 100;
+    const calculatedBmi = data.weight / (heightInMeters * heightInMeters);
+    setBmi(calculatedBmi);
+
+    if (calculatedBmi < 18.5) {
+      setBmiCategory('Underweight');
+    } else if (calculatedBmi >= 18.5 && calculatedBmi < 25) {
+      setBmiCategory('Normal weight');
+    } else if (calculatedBmi >= 25 && calculatedBmi < 30) {
+      setBmiCategory('Overweight');
+    } else {
+      setBmiCategory('Obesity');
+    }
+  };
+
+  const resetCalculator = () => {
+    form.reset();
+    setBmi(null);
+    setBmiCategory('');
+  };
+
+  return (
+    <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      <div className="lg:col-span-2">
+        <Card>
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)}>
+              <CardContent className="p-6 space-y-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <FormField
+                    control={form.control}
+                    name="height"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Height (cm)</FormLabel>
+                        <FormControl>
+                          <Input
+                            type="number"
+                            placeholder="e.g., 175"
+                            {...field}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="weight"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Weight (kg)</FormLabel>
+                        <FormControl>
+                          <Input
+                            type="number"
+                            placeholder="e.g., 70"
+                            {...field}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+              </CardContent>
+              <CardFooter className="flex justify-between">
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={resetCalculator}
+                >
+                  Reset
+                </Button>
+                <Button type="submit">
+                  <CalculatorIcon className="mr-2 h-4 w-4" />
+                  Calculate
+                </Button>
+              </CardFooter>
+            </form>
+          </Form>
+        </Card>
+      </div>
+
+      <div>
+        <Card className="sticky top-24">
+          <CardHeader>
+            <CardTitle>Result</CardTitle>
+          </CardHeader>
+          <CardContent className="text-center p-6">
+            {bmi !== null ? (
+              <div>
+                <p className="text-sm text-muted-foreground">Your BMI is</p>
+                <p className="text-5xl font-bold my-2">{bmi.toFixed(2)}</p>
+                <p className="text-lg font-semibold text-primary">
+                  {bmiCategory}
+                </p>
+              </div>
+            ) : (
+              <p className="text-muted-foreground">
+                Enter your height and weight to see your BMI.
+              </p>
+            )}
+          </CardContent>
+          {bmi !== null && (
+            <CardFooter className="flex justify-center gap-2">
+              <Button variant="ghost" size="icon">
+                <Code className="h-4 w-4" />
+              </Button>
+              <Button variant="ghost" size="icon">
+                <Share2 className="h-4 w-4" />
+              </Button>
+            </CardFooter>
+          )}
+        </Card>
+      </div>
+
+      <div className="lg:col-span-3 mt-8">
+        <Accordion type="single" collapsible>
+          <AccordionItem value="explanation">
+            <AccordionTrigger>How is BMI calculated?</AccordionTrigger>
+            <AccordionContent>
+              <p>
+                Body Mass Index (BMI) is a measure of body fat based on height
+                and weight that applies to adult men and women. The formula is:
+              </p>
+              <p className="font-mono bg-muted p-4 rounded-md my-4">
+                BMI = weight (kg) / [height (m)]²
+              </p>
+              <p>
+                The result is then used to categorize your weight status as
+                underweight, normal weight, overweight, or obese.
+              </p>
+            </AccordionContent>
+          </AccordionItem>
+        </Accordion>
+      </div>
+    </div>
+  );
+}

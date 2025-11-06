@@ -10,12 +10,24 @@ import {
   Cake,
   Droplets,
   Building,
+  Home,
+  Landmark,
+  Car,
+  TrendingUp,
+  LineChart,
+  CalendarClock,
+  Wallet,
+  AreaChart,
+  Receipt,
 } from 'lucide-react';
 import BmiCalculator from '@/components/calculators/bmi-calculator';
 import SimpleInterestCalculator from '@/components/calculators/simple-interest-calculator';
 import DobCalculator from '@/components/calculators/dob-calculator';
 import PeriodCalculator from '@/components/calculators/period-calculator';
 import ConcreteCalculator from '@/components/calculators/concrete-calculator';
+import MortgageCalculator from '@/components/calculators/mortgage-calculator';
+import LoanCalculator from '@/components/calculators/loan-calculator';
+import RetirementCalculator from '@/components/calculators/retirement-calculator';
 import type { ComponentType } from 'react';
 
 export interface Calculator {
@@ -47,6 +59,27 @@ export const calculatorCategories: CalculatorCategory[] = [
         description: 'Calculate simple interest on a loan or investment.',
         component: SimpleInterestCalculator,
         icon: CalculatorIcon,
+      },
+      {
+        name: 'Mortgage Calculator',
+        slug: 'mortgage-calculator',
+        description: 'Estimate your monthly mortgage payments.',
+        component: MortgageCalculator,
+        icon: Home,
+      },
+      {
+        name: 'Loan Calculator',
+        slug: 'loan-calculator',
+        description: 'Calculate payments for any type of loan.',
+        component: LoanCalculator,
+        icon: Landmark,
+      },
+      {
+        name: 'Retirement Calculator',
+        slug: 'retirement-calculator',
+        description: 'Plan and estimate your retirement savings.',
+        component: RetirementCalculator,
+        icon: CalendarClock,
       },
     ],
   },

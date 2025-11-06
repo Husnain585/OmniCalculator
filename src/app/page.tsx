@@ -47,7 +47,7 @@ export default function Home() {
                 <Link href="/calculators">Browse Calculators</Link>
             </Button>
              <Button size="lg" variant="outline" asChild>
-                <Link href="/register">Get Started</Link>
+                <Link href="/register">Get Started with OmniCalc</Link>
             </Button>
         </div>
       </section>

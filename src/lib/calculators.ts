@@ -24,6 +24,8 @@ import {
   PersonStanding,
   Minus,
   Percent,
+  Divide,
+  FlaskConical,
 } from 'lucide-react';
 import BmiCalculator from '@/components/calculators/bmi-calculator';
 import SimpleInterestCalculator from '@/components/calculators/simple-interest-calculator';
@@ -38,6 +40,8 @@ import DueDateCalculator from '@/components/calculators/due-date-calculator';
 import BodyFatCalculator from '@/components/calculators/body-fat-calculator';
 import BmrCalculator from '@/components/calculators/bmr-calculator';
 import PercentageCalculator from '@/components/calculators/percentage-calculator';
+import FractionCalculator from '@/components/calculators/fraction-calculator';
+import ScientificCalculator from '@/components/calculators/scientific-calculator';
 import type { ComponentType } from 'react';
 
 export interface Calculator {
@@ -155,6 +159,20 @@ export const calculatorCategories: CalculatorCategory[] = [
         description: 'Calculate percentages for various scenarios.',
         component: PercentageCalculator,
         icon: Percent,
+      },
+      {
+        name: 'Fraction Calculator',
+        slug: 'fraction-calculator',
+        description: 'Add, subtract, multiply, and divide fractions.',
+        component: FractionCalculator,
+        icon: Divide,
+      },
+       {
+        name: 'Scientific Calculator',
+        slug: 'scientific-calculator',
+        description: 'A powerful calculator for scientific and engineering calculations.',
+        component: ScientificCalculator,
+        icon: FlaskConical,
       },
     ],
   },

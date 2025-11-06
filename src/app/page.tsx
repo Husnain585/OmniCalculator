@@ -2,12 +2,10 @@ import Link from 'next/link';
 import {
   Card,
   CardContent,
-  CardDescription,
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
 import { calculatorCategories } from '@/lib/calculators';
-import AiSuggestions from '@/components/ai-suggestions';
 import { ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
@@ -26,7 +24,7 @@ function CategoryCard({
           </div>
         </CardHeader>
         <CardContent className="p-4 pt-0">
-          <CardDescription>{category.description}</CardDescription>
+          <p className="text-muted-foreground">{category.description}</p>
         </CardContent>
       </Card>
     </Link>
@@ -43,10 +41,6 @@ export default function Home() {
         <p className="mt-4 text-lg text-muted-foreground">
           Your one-stop destination for hundreds of free online calculators.
         </p>
-      </section>
-
-      <section>
-        <AiSuggestions />
       </section>
 
       <section>

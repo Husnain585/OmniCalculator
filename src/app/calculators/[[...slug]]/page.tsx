@@ -25,7 +25,6 @@ export default function CalculatorPage({
 }) {
   const { slug } = params;
 
-  // /calculators - All categories page
   if (!slug || slug.length === 0) {
     return (
       <div>
@@ -55,15 +54,15 @@ export default function CalculatorPage({
                     key={calc.slug}
                     href={`/calculators/${category.slug}/${calc.slug}`}
                   >
-                    <Card className="group h-full transition-all hover:bg-card/90 hover:shadow-md">
+                    <Card className="group h-full transition-all hover:bg-accent hover:text-accent-foreground">
                       <CardHeader>
                         <CardTitle className="flex items-center gap-3">
-                          <calc.icon className="h-6 w-6 text-muted-foreground" />
+                          <calc.icon className="h-6 w-6 text-primary group-hover:text-accent-foreground" />
                           {calc.name}
                         </CardTitle>
                       </CardHeader>
                       <CardContent>
-                        <CardDescription>{calc.description}</CardDescription>
+                        <p>{calc.description}</p>
                       </CardContent>
                     </Card>
                   </Link>
@@ -119,16 +118,16 @@ export default function CalculatorPage({
               key={calc.slug}
               href={`/calculators/${category.slug}/${calc.slug}`}
             >
-              <Card className="group flex flex-col justify-between h-full transition-shadow hover:shadow-xl">
+              <Card className="group flex flex-col justify-between h-full transition-shadow hover:shadow-xl hover:bg-accent hover:text-accent-foreground">
                 <CardHeader>
                   <CardTitle className="flex items-center gap-3">
-                    <calc.icon className="h-6 w-6 text-primary" />
+                    <calc.icon className="h-6 w-6 text-primary group-hover:text-accent-foreground" />
                     <span>{calc.name}</span>
                   </CardTitle>
-                  <CardDescription>{calc.description}</CardDescription>
+                  <CardDescription className="group-hover:text-accent-foreground/80">{calc.description}</CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <div className="text-sm font-semibold text-primary flex items-center">
+                  <div className="text-sm font-semibold text-primary flex items-center group-hover:text-accent-foreground">
                     Calculate Now{' '}
                     <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
                   </div>

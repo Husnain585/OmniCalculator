@@ -27,6 +27,7 @@ import {
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
 import Link from 'next/link';
+import { Calculator } from 'lucide-react';
 
 const formSchema = z.object({
   email: z.string().email({ message: 'Invalid email address.' }),
@@ -53,11 +54,8 @@ export default function LoginPage() {
     setLoading(true);
     try {
       await signInWithEmailAndPassword(auth, data.email, data.password);
-      toast({
-        title: 'Success',
-        description: 'You have successfully logged in.',
-      });
       router.push('/');
+      router.refresh(); // This will help in re-rendering the header
     } catch (error: any) {
       console.error('Login error:', error);
       toast({
@@ -71,17 +69,17 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="flex items-center justify-center min-h-full">
-      <Card className="w-full max-w-md">
-        <CardHeader>
-          <CardTitle className="text-2xl">Login</CardTitle>
-          <CardDescription>
-            Enter your email below to login to your account.
-          </CardDescription>
-        </CardHeader>
+    <div className="flex flex-col items-center justify-center min-h-full py-12">
+      <div className="mx-auto grid w-[350px] gap-6">
+        <div className="grid gap-2 text-center">
+            <Calculator className="h-10 w-10 text-primary mx-auto mb-2" />
+          <h1 className="text-3xl font-bold">Welcome Back</h1>
+          <p className="text-balance text-muted-foreground">
+            Enter your credentials to access your account
+          </p>
+        </div>
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)}>
-            <CardContent className="space-y-4">
+          <form onSubmit={form.handleSubmit(onSubmit)} className="grid gap-4">
               <FormField
                 control={form.control}
                 name="email"
@@ -118,21 +116,18 @@ export default function LoginPage() {
                   </FormItem>
                 )}
               />
-            </CardContent>
-            <CardFooter className="flex flex-col gap-4">
               <Button type="submit" className="w-full" disabled={loading}>
                 {loading ? 'Logging in...' : 'Login'}
               </Button>
-              <div className="text-center text-sm">
-                Don&apos;t have an account?{' '}
-                <Link href="/register" className="underline">
-                  Sign up
-                </Link>
-              </div>
-            </CardFooter>
           </form>
         </Form>
-      </Card>
+        <div className="mt-4 text-center text-sm">
+          Don&apos;t have an account?{" "}
+          <Link href="/register" className="underline">
+            Sign up
+          </Link>
+        </div>
+      </div>
     </div>
   );
 }

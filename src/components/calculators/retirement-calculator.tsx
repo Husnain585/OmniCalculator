@@ -45,6 +45,10 @@ export default function RetirementCalculator() {
     resolver: zodResolver(formSchema),
     defaultValues: {
       annualReturn: 7,
+      currentAge: undefined,
+      retirementAge: undefined,
+      currentSavings: undefined,
+      monthlyContribution: undefined,
     }
   });
 

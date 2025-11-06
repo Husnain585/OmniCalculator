@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { useForm, SubmitHandler } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardFooter, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import {
   Form,
@@ -21,7 +21,9 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from '@/components/ui/accordion';
-import { Code, Share2, Calculator as CalculatorIcon } from 'lucide-react';
+import { Code, Share2, Calculator as CalculatorIcon, Lightbulb } from 'lucide-react';
+import { suggestNextStep } from '@/ai/flows/suggest-next-step';
+import { Skeleton } from '@/components/ui/skeleton';
 
 const formSchema = z.object({
   height: z.coerce.number().positive('Height must be positive'),
@@ -33,6 +35,8 @@ type BmiFormValues = z.infer<typeof formSchema>;
 export default function BmiCalculator() {
   const [bmi, setBmi] = useState<number | null>(null);
   const [bmiCategory, setBmiCategory] = useState<string>('');
+  const [suggestion, setSuggestion] = useState('');
+  const [suggestionLoading, setSuggestionLoading] = useState(false);
 
   const form = useForm<BmiFormValues>({
     resolver: zodResolver(formSchema),
@@ -42,19 +46,34 @@ export default function BmiCalculator() {
     },
   });
 
-  const onSubmit: SubmitHandler<BmiFormValues> = (data) => {
+  const onSubmit: SubmitHandler<BmiFormValues> = async (data) => {
     const heightInMeters = data.height / 100;
     const calculatedBmi = data.weight / (heightInMeters * heightInMeters);
     setBmi(calculatedBmi);
 
+    let category = '';
     if (calculatedBmi < 18.5) {
-      setBmiCategory('Underweight');
+      category = 'Underweight';
     } else if (calculatedBmi >= 18.5 && calculatedBmi < 25) {
-      setBmiCategory('Normal weight');
+      category = 'Normal weight';
     } else if (calculatedBmi >= 25 && calculatedBmi < 30) {
-      setBmiCategory('Overweight');
+      category = 'Overweight';
     } else {
-      setBmiCategory('Obesity');
+      category = 'Obesity';
+    }
+    setBmiCategory(category);
+    
+    // Fetch AI suggestion
+    setSuggestionLoading(true);
+    setSuggestion('');
+    try {
+      const result = await suggestNextStep({ calculatorName: 'BMI Calculator' });
+      setSuggestion(result.suggestion);
+    } catch (error) {
+      console.error('Failed to get AI suggestion:', error);
+      setSuggestion("Consider tracking your daily calories or exploring a fitness plan to complement your health goals.");
+    } finally {
+      setSuggestionLoading(false);
     }
   };
 
@@ -62,6 +81,8 @@ export default function BmiCalculator() {
     form.reset();
     setBmi(null);
     setBmiCategory('');
+    setSuggestion('');
+    setSuggestionLoading(false);
   };
 
   return (
@@ -131,7 +152,7 @@ export default function BmiCalculator() {
           <CardHeader>
             <CardTitle>Result</CardTitle>
           </CardHeader>
-          <CardContent className="text-center p-6">
+          <CardContent className="text-center p-6 space-y-6">
             {bmi !== null ? (
               <div>
                 <p className="text-sm text-muted-foreground">Your BMI is</p>
@@ -145,17 +166,26 @@ export default function BmiCalculator() {
                 Enter your height and weight to see your BMI.
               </p>
             )}
+             
+            {(suggestion || suggestionLoading) && (
+                 <div className="pt-6 border-t">
+                  <CardHeader className="p-0 mb-2 flex-row items-center gap-2">
+                    <Lightbulb className="h-5 w-5 text-primary" />
+                    <CardTitle className="text-lg">Next Step</CardTitle>
+                  </CardHeader>
+                  <CardDescription>
+                    {suggestionLoading ? (
+                      <div className="space-y-2">
+                        <Skeleton className="h-4 w-full" />
+                        <Skeleton className="h-4 w-3/4" />
+                      </div>
+                    ) : (
+                      suggestion
+                    )}
+                  </CardDescription>
+                </div>
+            )}
           </CardContent>
-          {bmi !== null && (
-            <CardFooter className="flex justify-center gap-2">
-              <Button variant="ghost" size="icon">
-                <Code className="h-4 w-4" />
-              </Button>
-              <Button variant="ghost" size="icon">
-                <Share2 className="h-4 w-4" />
-              </Button>
-            </CardFooter>
-          )}
         </Card>
       </div>
 

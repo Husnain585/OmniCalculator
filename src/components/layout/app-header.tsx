@@ -1,7 +1,7 @@
 "use client";
 
 import Link from 'next/link';
-import { CircleUser, Package2, Search, LogOut } from 'lucide-react';
+import { CircleUser, Calculator, Search, LogOut } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
@@ -30,7 +30,7 @@ export default function AppHeader() {
   return (
     <header className="sticky top-0 z-30 flex h-14 w-full items-center gap-4 border-b bg-background px-4 sm:px-6">
       <Link href="/" className="flex items-center gap-2 font-semibold text-lg mr-4">
-        <Package2 className="h-6 w-6" />
+        <Calculator className="h-6 w-6 text-primary" />
         <span className="">OmniCalc</span>
       </Link>
       

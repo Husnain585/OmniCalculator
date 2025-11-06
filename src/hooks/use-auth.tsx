@@ -3,7 +3,6 @@
 import { useState, useEffect, createContext, useContext, ReactNode } from 'react';
 import { getAuth, onAuthStateChanged, User } from 'firebase/auth';
 import { app } from '@/lib/firebase';
-import { Skeleton } from '@/components/ui/skeleton';
 
 interface AuthContextType {
   user: User | null;
@@ -28,22 +27,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
     return () => unsubscribe();
   }, []);
-
-  if (loading) {
-      return (
-        <div className="flex flex-col min-h-screen">
-            <header className="sticky top-0 z-30 flex h-14 w-full items-center gap-4 border-b bg-background px-4 sm:px-6">
-                <Skeleton className="h-6 w-32" />
-                <div className="ml-auto">
-                    <Skeleton className="h-8 w-8 rounded-full" />
-                </div>
-            </header>
-            <main className="flex-1 container mx-auto p-4 sm:p-6 lg:p-8">
-                <Skeleton className="h-96 w-full" />
-            </main>
-        </div>
-      )
-  }
 
   return (
     <AuthContext.Provider value={{ user, loading }}>

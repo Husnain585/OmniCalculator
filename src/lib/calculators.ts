@@ -7,9 +7,15 @@ import {
   HardHat,
   FunctionSquare,
   Calculator as CalculatorIcon,
+  Cake,
+  Droplets,
+  Building,
 } from 'lucide-react';
 import BmiCalculator from '@/components/calculators/bmi-calculator';
 import SimpleInterestCalculator from '@/components/calculators/simple-interest-calculator';
+import DobCalculator from '@/components/calculators/dob-calculator';
+import PeriodCalculator from '@/components/calculators/period-calculator';
+import ConcreteCalculator from '@/components/calculators/concrete-calculator';
 import type { ComponentType } from 'react';
 
 export interface Calculator {
@@ -57,6 +63,13 @@ export const calculatorCategories: CalculatorCategory[] = [
         component: BmiCalculator,
         icon: CalculatorIcon,
       },
+      {
+        name: 'Period & Ovulation',
+        slug: 'period-calculator',
+        description: 'Estimate your next period and fertile window.',
+        component: PeriodCalculator,
+        icon: Droplets,
+      },
     ],
   },
   {
@@ -78,14 +91,30 @@ export const calculatorCategories: CalculatorCategory[] = [
     slug: 'construction',
     description: 'Calculators for building and construction projects.',
     icon: HardHat,
-    calculators: [],
+    calculators: [
+      {
+        name: 'Concrete Calculator',
+        slug: 'concrete-calculator',
+        description: 'Estimate the volume of concrete needed for a project.',
+        component: ConcreteCalculator,
+        icon: Building,
+      },
+    ],
   },
   {
     name: 'Other',
     slug: 'other',
     description: 'A collection of other useful calculators.',
     icon: FunctionSquare,
-    calculators: [],
+    calculators: [
+      {
+        name: 'Date of Birth',
+        slug: 'dob-calculator',
+        description: 'Calculate your age and see details about your birthday.',
+        component: DobCalculator,
+        icon: Cake,
+      },
+    ],
   },
 ];
 

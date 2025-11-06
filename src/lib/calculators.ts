@@ -23,6 +23,7 @@ import {
   Baby,
   PersonStanding,
   Minus,
+  Percent,
 } from 'lucide-react';
 import BmiCalculator from '@/components/calculators/bmi-calculator';
 import SimpleInterestCalculator from '@/components/calculators/simple-interest-calculator';
@@ -36,6 +37,7 @@ import CalorieCalculator from '@/components/calculators/calorie-calculator';
 import DueDateCalculator from '@/components/calculators/due-date-calculator';
 import BodyFatCalculator from '@/components/calculators/body-fat-calculator';
 import BmrCalculator from '@/components/calculators/bmr-calculator';
+import PercentageCalculator from '@/components/calculators/percentage-calculator';
 import type { ComponentType } from 'react';
 
 export interface Calculator {
@@ -146,7 +148,15 @@ export const calculatorCategories: CalculatorCategory[] = [
     slug: 'math',
     description: 'Solve mathematical problems from basic to advanced.',
     icon: Sigma,
-    calculators: [],
+    calculators: [
+      {
+        name: 'Percentage Calculator',
+        slug: 'percentage-calculator',
+        description: 'Calculate percentages for various scenarios.',
+        component: PercentageCalculator,
+        icon: Percent,
+      },
+    ],
   },
   {
     name: 'Fitness',

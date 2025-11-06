@@ -1,25 +1,68 @@
 "use client";
 
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { FlaskConical } from 'lucide-react';
+import { useState } from 'react';
+import { Card, CardContent } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { evaluate } from 'mathjs';
+
+const buttonLayout = [
+  ['(', ')', '%', 'AC'],
+  ['sin', 'cos', 'tan', 'ln'],
+  ['7', '8', '9', '/'],
+  ['4', '5', '6', '*'],
+  ['1', '2', '3', '-'],
+  ['0', '.', '=', '+'],
+];
 
 export default function ScientificCalculator() {
+  const [input, setInput] = useState('');
+  const [result, setResult] = useState('');
+
+  const handleButtonClick = (value: string) => {
+    if (value === 'AC') {
+      setInput('');
+      setResult('');
+    } else if (value === '=') {
+      try {
+        // Replace percentage
+        const expression = input.replace(/%/g, '/100');
+        const evalResult = evaluate(expression);
+        setResult(evalResult.toString());
+      } catch (error) {
+        setResult('Error');
+      }
+    } else {
+      setInput((prev) => prev + value);
+    }
+  };
 
   return (
-    <div className="flex items-center justify-center h-full">
-      <Card className="w-full max-w-md text-center">
-        <CardHeader>
-            <div className="mx-auto bg-primary/20 p-3 rounded-full">
-             <FlaskConical className="h-8 w-8 text-primary" />
+    <div className="flex justify-center items-center">
+        <Card className="w-full max-w-sm mx-auto shadow-lg">
+        <CardContent className="p-4">
+            <div className="bg-muted rounded-lg p-4 mb-4 text-right">
+                <div className="text-muted-foreground text-sm h-6 truncate">{input || "0"}</div>
+                <div className="text-foreground text-4xl font-bold h-12 truncate">{result || (input || "0")}</div>
             </div>
-          <CardTitle className="mt-4">Scientific Calculator Coming Soon!</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <CardDescription>
-            We are currently building a powerful scientific calculator with advanced functions. Please check back later.
-          </CardDescription>
+
+            <div className="grid grid-cols-4 gap-2">
+            {buttonLayout.flat().map((btn) => (
+                <Button
+                    key={btn}
+                    onClick={() => handleButtonClick(btn)}
+                    variant={
+                        ['/', '*', '-', '+', '='].includes(btn) ? 'default' :
+                        btn === 'AC' ? 'destructive' :
+                        'secondary'
+                    }
+                    className="h-16 text-xl"
+                >
+                {btn}
+                </Button>
+            ))}
+            </div>
         </CardContent>
-      </Card>
+        </Card>
     </div>
   );
 }

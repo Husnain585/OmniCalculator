@@ -26,6 +26,7 @@ import {
   Percent,
   Divide,
   FlaskConical,
+  Shuffle,
 } from 'lucide-react';
 import BmiCalculator from '@/components/calculators/bmi-calculator';
 import SimpleInterestCalculator from '@/components/calculators/simple-interest-calculator';
@@ -42,6 +43,7 @@ import BmrCalculator from '@/components/calculators/bmr-calculator';
 import PercentageCalculator from '@/components/calculators/percentage-calculator';
 import FractionCalculator from '@/components/calculators/fraction-calculator';
 import ScientificCalculator from '@/components/calculators/scientific-calculator';
+import RandomNumberGenerator from '@/components/calculators/random-number-generator';
 import type { ComponentType } from 'react';
 
 export interface Calculator {
@@ -174,6 +176,13 @@ export const calculatorCategories: CalculatorCategory[] = [
         component: ScientificCalculator,
         icon: FlaskConical,
       },
+      {
+        name: 'Random Number Generator',
+        slug: 'random-number-generator',
+        description: 'Generate a random number within a specified range.',
+        component: RandomNumberGenerator,
+        icon: Shuffle,
+      }
     ],
   },
   {

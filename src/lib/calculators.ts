@@ -19,6 +19,8 @@ import {
   Wallet,
   AreaChart,
   Receipt,
+  Flame,
+  Baby,
 } from 'lucide-react';
 import BmiCalculator from '@/components/calculators/bmi-calculator';
 import SimpleInterestCalculator from '@/components/calculators/simple-interest-calculator';
@@ -28,6 +30,8 @@ import ConcreteCalculator from '@/components/calculators/concrete-calculator';
 import MortgageCalculator from '@/components/calculators/mortgage-calculator';
 import LoanCalculator from '@/components/calculators/loan-calculator';
 import RetirementCalculator from '@/components/calculators/retirement-calculator';
+import CalorieCalculator from '@/components/calculators/calorie-calculator';
+import DueDateCalculator from '@/components/calculators/due-date-calculator';
 import type { ComponentType } from 'react';
 
 export interface Calculator {
@@ -102,6 +106,20 @@ export const calculatorCategories: CalculatorCategory[] = [
         description: 'Estimate your next period and fertile window.',
         component: PeriodCalculator,
         icon: Droplets,
+      },
+      {
+        name: 'Calorie Calculator',
+        slug: 'calorie-calculator',
+        description: 'Estimate your daily calorie needs for maintenance or weight loss.',
+        component: CalorieCalculator,
+        icon: Flame,
+      },
+      {
+        name: 'Due Date Calculator',
+        slug: 'due-date-calculator',
+        description: 'Estimate your pregnancy due date.',
+        component: DueDateCalculator,
+        icon: Baby,
       },
     ],
   },

@@ -164,7 +164,7 @@ export default function RetirementCalculator() {
                         <FormControl>
                           <Input type="number" step="0.1" placeholder="e.g., 7" {...field} />
                         </FormControl>
-                         <FormDescription>Average stock market return is 7-10%.</FormDescription>
+                         <div>Average stock market return is 7-10%.</div>
                         <FormMessage />
                       </FormItem>
                     )}

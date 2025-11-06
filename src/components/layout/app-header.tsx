@@ -25,6 +25,7 @@ export default function AppHeader() {
   const handleLogout = async () => {
     await signOut(auth);
     router.push('/login');
+    router.refresh();
   };
 
   return (

@@ -55,7 +55,7 @@ export default function LoginPage() {
     try {
       await signInWithEmailAndPassword(auth, data.email, data.password);
       router.push('/');
-      router.refresh(); // This will help in re-rendering the header
+      router.refresh();
     } catch (error: any) {
       console.error('Login error:', error);
       toast({

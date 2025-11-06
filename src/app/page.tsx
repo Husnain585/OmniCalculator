@@ -8,6 +8,7 @@ import {
 import { calculatorCategories } from '@/lib/calculators';
 import { ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import AiSuggestions from '@/components/ai-suggestions';
 
 function CategoryCard({
   category,
@@ -33,15 +34,25 @@ function CategoryCard({
 
 export default function Home() {
   return (
-    <div className="space-y-12">
+    <div className="space-y-16">
       <section className="text-center">
         <h1 className="text-4xl font-bold tracking-tight lg:text-5xl font-headline">
           Welcome to OmniCalc
         </h1>
-        <p className="mt-4 text-lg text-muted-foreground">
-          Your one-stop destination for hundreds of free online calculators.
+        <p className="mt-4 text-lg text-muted-foreground max-w-2xl mx-auto">
+          Your one-stop destination for a comprehensive collection of free online calculators designed for every need.
         </p>
+         <div className="mt-8 flex gap-4 justify-center">
+            <Button size="lg" asChild>
+                <Link href="/calculators">Browse Calculators</Link>
+            </Button>
+             <Button size="lg" variant="outline" asChild>
+                <Link href="/register">Get Started</Link>
+            </Button>
+        </div>
       </section>
+
+      <AiSuggestions />
 
       <section>
         <div className="flex items-center justify-between mb-6">

@@ -25,7 +25,7 @@ export default function AiSuggestions() {
         // In a real app, these would come from user data and analytics
         const pastUsage = 'BMI Calculator';
         const trendingCalculators =
-          'Simple Interest Calculator, Mortgage Calculator';
+          'Simple Interest, Mortgage Calculator';
 
         const result = await suggestCalculatorsBasedOnUsage({
           pastUsage,

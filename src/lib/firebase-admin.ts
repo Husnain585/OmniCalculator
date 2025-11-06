@@ -1,9 +1,10 @@
 import * as admin from 'firebase-admin';
+import { getApps } from 'firebase-admin/app';
 
 // IMPORTANT: Do not expose this file to the client-side.
 // It should only be used in server-side code (e.g., API routes, server components).
 
-if (!admin.apps.length) {
+if (!getApps().length) {
   try {
     admin.initializeApp({
       credential: admin.credential.cert({

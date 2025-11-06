@@ -1,7 +1,7 @@
 "use client";
 
 import Link from 'next/link';
-import { CircleUser, Calculator, Search, LogOut } from 'lucide-react';
+import { CircleUser, Calculator, Search, LogOut, Shield } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
@@ -16,11 +16,25 @@ import { useAuth } from '@/hooks/use-auth';
 import { getAuth, signOut } from 'firebase/auth';
 import { app } from '@/lib/firebase';
 import { useRouter } from 'next/navigation';
+import { useState, useEffect } from 'react';
 
 export default function AppHeader() {
   const { user, loading } = useAuth();
   const router = useRouter();
   const auth = getAuth(app);
+  const [isAdmin, setIsAdmin] = useState(false);
+
+  useEffect(() => {
+    async function checkAdminStatus() {
+      if (user) {
+        const idTokenResult = await user.getIdTokenResult();
+        setIsAdmin(!!idTokenResult.claims.admin);
+      } else {
+        setIsAdmin(false);
+      }
+    }
+    checkAdminStatus();
+  }, [user]);
 
   const handleLogout = async () => {
     await signOut(auth);
@@ -57,6 +71,14 @@ export default function AppHeader() {
               <DropdownMenuContent align="end">
                 <DropdownMenuLabel>{user.email}</DropdownMenuLabel>
                 <DropdownMenuSeparator />
+                {isAdmin && (
+                  <DropdownMenuItem asChild>
+                    <Link href="/admin">
+                      <Shield className="mr-2 h-4 w-4" />
+                      Admin Dashboard
+                    </Link>
+                  </DropdownMenuItem>
+                )}
                 <DropdownMenuItem>Saved Calculations</DropdownMenuItem>
                 <DropdownMenuItem>Settings</DropdownMenuItem>
                 <DropdownMenuSeparator />

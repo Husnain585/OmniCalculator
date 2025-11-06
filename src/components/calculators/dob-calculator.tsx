@@ -30,7 +30,9 @@ import {
 import { Calendar } from '@/components/ui/calendar';
 import { Input } from '@/components/ui/input';
 import { cn } from '@/lib/utils';
-import { Calendar as CalendarIcon, Calculator } from 'lucide-react';
+import { Calendar as CalendarIcon, Calculator, Lightbulb } from 'lucide-react';
+import { suggestNextStep } from '@/ai/flows/suggest-next-step';
+import { Skeleton } from '@/components/ui/skeleton';
 
 const formSchema = z.object({
   dob: z.date({
@@ -49,12 +51,14 @@ interface Result {
 
 export default function DobCalculator() {
   const [result, setResult] = useState<Result | null>(null);
+  const [suggestion, setSuggestion] = useState('');
+  const [suggestionLoading, setSuggestionLoading] = useState(false);
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
   });
 
-  const onSubmit: SubmitHandler<FormValues> = (data) => {
+  const onSubmit: SubmitHandler<FormValues> = async (data) => {
     const now = new Date();
     const dob = data.dob;
 
@@ -90,11 +94,25 @@ export default function DobCalculator() {
     const birthDay = dayOfWeek[getDay(dob)];
 
     setResult({ years, months, days, birthDay });
+
+    setSuggestionLoading(true);
+    setSuggestion('');
+    try {
+      const result = await suggestNextStep({ calculatorName: 'Date of Birth Calculator' });
+      setSuggestion(result.suggestion);
+    } catch (error) {
+      console.error('Failed to get AI suggestion:', error);
+      setSuggestion("Did you know you can also calculate the time until your next birthday? Planning a celebration early is always a good idea!");
+    } finally {
+      setSuggestionLoading(false);
+    }
   };
 
   const resetCalculator = () => {
     form.reset();
     setResult(null);
+    setSuggestion('');
+    setSuggestionLoading(false);
   };
 
   return (
@@ -200,6 +218,26 @@ export default function DobCalculator() {
                 Enter your date of birth to see your age.
               </p>
             )}
+
+            {(suggestion || suggestionLoading) && (
+                 <div className="pt-6 border-t">
+                  <CardHeader className="p-0 mb-2 flex-row items-center gap-2">
+                    <Lightbulb className="h-5 w-5 text-primary" />
+                    <CardTitle className="text-lg">Next Step</CardTitle>
+                  </CardHeader>
+                  <CardDescription>
+                    {suggestionLoading ? (
+                      <div className="space-y-2">
+                        <Skeleton className="h-4 w-full" />
+                        <Skeleton className="h-4 w-3/4" />
+                      </div>
+                    ) : (
+                      suggestion
+                    )}
+                  </CardDescription>
+                </div>
+            )}
+
           </CardContent>
         </Card>
       </div>

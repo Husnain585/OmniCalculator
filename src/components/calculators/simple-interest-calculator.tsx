@@ -10,6 +10,7 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
+  CardDescription,
 } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import {
@@ -27,7 +28,9 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from '@/components/ui/accordion';
-import { Code, Share2, Calculator as CalculatorIcon } from 'lucide-react';
+import { Code, Share2, Calculator as CalculatorIcon, Lightbulb } from 'lucide-react';
+import { suggestNextStep } from '@/ai/flows/suggest-next-step';
+import { Skeleton } from '@/components/ui/skeleton';
 
 const formSchema = z.object({
   principal: z.coerce.number().positive('Principal must be positive'),
@@ -44,6 +47,8 @@ interface Result {
 
 export default function SimpleInterestCalculator() {
   const [result, setResult] = useState<Result | null>(null);
+  const [suggestion, setSuggestion] = useState('');
+  const [suggestionLoading, setSuggestionLoading] = useState(false);
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
@@ -54,15 +59,29 @@ export default function SimpleInterestCalculator() {
     },
   });
 
-  const onSubmit: SubmitHandler<FormValues> = (data) => {
+  const onSubmit: SubmitHandler<FormValues> = async (data) => {
     const interest = data.principal * (data.rate / 100) * data.time;
     const total = data.principal + interest;
     setResult({ interest, total });
+
+    setSuggestionLoading(true);
+    setSuggestion('');
+    try {
+      const result = await suggestNextStep({ calculatorName: 'Simple Interest Calculator' });
+      setSuggestion(result.suggestion);
+    } catch (error) {
+      console.error('Failed to get AI suggestion:', error);
+      setSuggestion("Consider exploring compound interest to see how your savings could grow even faster.");
+    } finally {
+      setSuggestionLoading(false);
+    }
   };
 
   const resetCalculator = () => {
     form.reset();
     setResult(null);
+    setSuggestion('');
+    setSuggestionLoading(false);
   };
 
   return (
@@ -171,6 +190,25 @@ export default function SimpleInterestCalculator() {
               <p className="text-muted-foreground text-center">
                 Enter the details to see the calculation.
               </p>
+            )}
+
+            {(suggestion || suggestionLoading) && (
+                 <div className="pt-6 border-t">
+                  <CardHeader className="p-0 mb-2 flex-row items-center gap-2">
+                    <Lightbulb className="h-5 w-5 text-primary" />
+                    <CardTitle className="text-lg">Next Step</CardTitle>
+                  </CardHeader>
+                  <CardDescription>
+                    {suggestionLoading ? (
+                      <div className="space-y-2">
+                        <Skeleton className="h-4 w-full" />
+                        <Skeleton className="h-4 w-3/4" />
+                      </div>
+                    ) : (
+                      suggestion
+                    )}
+                  </CardDescription>
+                </div>
             )}
           </CardContent>
           {result && (

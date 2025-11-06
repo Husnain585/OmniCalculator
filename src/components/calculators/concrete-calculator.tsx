@@ -10,6 +10,7 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
+  CardDescription,
 } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import {
@@ -22,7 +23,9 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
-import { Calculator } from 'lucide-react';
+import { Calculator, Lightbulb } from 'lucide-react';
+import { suggestNextStep } from '@/ai/flows/suggest-next-step';
+import { Skeleton } from '@/components/ui/skeleton';
 
 const formSchema = z.object({
   length: z.coerce.number().positive('Length must be positive'),
@@ -40,6 +43,8 @@ interface Result {
 
 export default function ConcreteCalculator() {
   const [result, setResult] = useState<Result | null>(null);
+  const [suggestion, setSuggestion] = useState('');
+  const [suggestionLoading, setSuggestionLoading] = useState(false);
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
@@ -48,7 +53,7 @@ export default function ConcreteCalculator() {
     },
   });
 
-  const onSubmit: SubmitHandler<FormValues> = (data) => {
+  const onSubmit: SubmitHandler<FormValues> = async (data) => {
     let volumeCubicFeet: number;
     const { length, width, depth, units } = data;
 
@@ -67,11 +72,25 @@ export default function ConcreteCalculator() {
     const cubicMeters = cubicYards * 0.764555;
     
     setResult({ cubicYards, cubicMeters });
+
+    setSuggestionLoading(true);
+    setSuggestion('');
+    try {
+      const result = await suggestNextStep({ calculatorName: 'Concrete Calculator' });
+      setSuggestion(result.suggestion);
+    } catch (error) {
+      console.error('Failed to get AI suggestion:', error);
+      setSuggestion("Always order about 10% extra concrete to account for spillage and uneven ground levels.");
+    } finally {
+      setSuggestionLoading(false);
+    }
   };
 
   const resetCalculator = () => {
     form.reset({ units: 'feet', length: undefined, width: undefined, depth: undefined });
     setResult(null);
+    setSuggestion('');
+    setSuggestionLoading(false);
   };
   
   const unit = form.watch('units');
@@ -181,9 +200,9 @@ export default function ConcreteCalculator() {
           <CardHeader>
             <CardTitle>Concrete Needed</CardTitle>
           </CardHeader>
-          <CardContent className="space-y-4 p-6 text-center">
+          <CardContent className="space-y-4 p-6">
             {result ? (
-              <>
+              <div className="text-center">
                 <div>
                   <p className="text-sm text-muted-foreground">
                     Volume in Cubic Yards
@@ -192,18 +211,38 @@ export default function ConcreteCalculator() {
                     {result.cubicYards.toFixed(2)} yd³
                   </p>
                 </div>
-                <div>
+                <div className="mt-4">
                   <p className="text-sm text-muted-foreground">Volume in Cubic Meters</p>
                   <p className="text-3xl font-bold">
                     {result.cubicMeters.toFixed(2)} m³
                   </p>
                 </div>
-              </>
+              </div>
             ) : (
-              <p className="text-muted-foreground">
+              <p className="text-muted-foreground text-center">
                 Enter dimensions to see the required volume.
               </p>
             )}
+
+            {(suggestion || suggestionLoading) && (
+                 <div className="pt-6 border-t">
+                  <CardHeader className="p-0 mb-2 flex-row items-center gap-2">
+                    <Lightbulb className="h-5 w-5 text-primary" />
+                    <CardTitle className="text-lg">Next Step</CardTitle>
+                  </CardHeader>
+                  <CardDescription>
+                    {suggestionLoading ? (
+                      <div className="space-y-2">
+                        <Skeleton className="h-4 w-full" />
+                        <Skeleton className="h-4 w-3/4" />
+                      </div>
+                    ) : (
+                      suggestion
+                    )}
+                  </CardDescription>
+                </div>
+            )}
+
           </CardContent>
         </Card>
       </div>

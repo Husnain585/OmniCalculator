@@ -30,7 +30,9 @@ import {
 import { Calendar } from '@/components/ui/calendar';
 import { Input } from '@/components/ui/input';
 import { cn } from '@/lib/utils';
-import { Calendar as CalendarIcon, Calculator } from 'lucide-react';
+import { Calendar as CalendarIcon, Calculator, Lightbulb } from 'lucide-react';
+import { suggestNextStep } from '@/ai/flows/suggest-next-step';
+import { Skeleton } from '@/components/ui/skeleton';
 
 const formSchema = z.object({
   lastPeriodDate: z.date({
@@ -53,6 +55,8 @@ interface Result {
 
 export default function PeriodCalculator() {
   const [result, setResult] = useState<Result | null>(null);
+  const [suggestion, setSuggestion] = useState('');
+  const [suggestionLoading, setSuggestionLoading] = useState(false);
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
@@ -61,7 +65,7 @@ export default function PeriodCalculator() {
     },
   });
 
-  const onSubmit: SubmitHandler<FormValues> = (data) => {
+  const onSubmit: SubmitHandler<FormValues> = async (data) => {
     const { lastPeriodDate, cycleLength } = data;
     const nextPeriodDate = addDays(lastPeriodDate, cycleLength);
     const ovulationDate = subDays(nextPeriodDate, 14);
@@ -74,11 +78,25 @@ export default function PeriodCalculator() {
       fertileWindowEnd: format(fertileWindowEnd, 'PPP'),
       ovulationDate: format(ovulationDate, 'PPP'),
     });
+
+    setSuggestionLoading(true);
+    setSuggestion('');
+    try {
+      const result = await suggestNextStep({ calculatorName: 'Period Calculator' });
+      setSuggestion(result.suggestion);
+    } catch (error) {
+      console.error('Failed to get AI suggestion:', error);
+      setSuggestion("Tracking your cycle can provide valuable insights into your overall health. Consider noting symptoms to discuss with your doctor.");
+    } finally {
+      setSuggestionLoading(false);
+    }
   };
 
   const resetCalculator = () => {
     form.reset({ cycleLength: 28 });
     setResult(null);
+    setSuggestion('');
+    setSuggestionLoading(false);
   };
 
   return (
@@ -191,6 +209,25 @@ export default function PeriodCalculator() {
               <p className="text-muted-foreground text-center">
                 Enter your cycle details to see estimates.
               </p>
+            )}
+
+            {(suggestion || suggestionLoading) && (
+                 <div className="pt-6 border-t">
+                  <CardHeader className="p-0 mb-2 flex-row items-center gap-2">
+                    <Lightbulb className="h-5 w-5 text-primary" />
+                    <CardTitle className="text-lg">Next Step</CardTitle>
+                  </CardHeader>
+                  <CardDescription>
+                    {suggestionLoading ? (
+                      <div className="space-y-2">
+                        <Skeleton className="h-4 w-full" />
+                        <Skeleton className="h-4 w-3/4" />
+                      </div>
+                    ) : (
+                      suggestion
+                    )}
+                  </CardDescription>
+                </div>
             )}
           </CardContent>
         </Card>

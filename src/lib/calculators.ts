@@ -27,6 +27,7 @@ import {
   Divide,
   FlaskConical,
   Shuffle,
+  ArrowRightLeft,
 } from 'lucide-react';
 import BmiCalculator from '@/components/calculators/bmi-calculator';
 import SimpleInterestCalculator from '@/components/calculators/simple-interest-calculator';
@@ -44,6 +45,7 @@ import PercentageCalculator from '@/components/calculators/percentage-calculator
 import FractionCalculator from '@/components/calculators/fraction-calculator';
 import ScientificCalculator from '@/components/calculators/scientific-calculator';
 import RandomNumberGenerator from '@/components/calculators/random-number-generator';
+import CurrencyConverter from '@/components/calculators/currency-converter';
 import type { ComponentType } from 'react';
 
 export interface Calculator {
@@ -97,6 +99,13 @@ export const calculatorCategories: CalculatorCategory[] = [
         component: RetirementCalculator,
         icon: CalendarClock,
       },
+      {
+        name: 'USD to PKR Converter',
+        slug: 'usd-to-pkr-converter',
+        description: 'Convert US Dollars to Pakistani Rupees.',
+        component: CurrencyConverter,
+        icon: ArrowRightLeft,
+      }
     ],
   },
   {

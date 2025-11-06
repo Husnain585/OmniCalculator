@@ -21,6 +21,8 @@ import {
   Receipt,
   Flame,
   Baby,
+  PersonStanding,
+  Minus,
 } from 'lucide-react';
 import BmiCalculator from '@/components/calculators/bmi-calculator';
 import SimpleInterestCalculator from '@/components/calculators/simple-interest-calculator';
@@ -32,6 +34,8 @@ import LoanCalculator from '@/components/calculators/loan-calculator';
 import RetirementCalculator from '@/components/calculators/retirement-calculator';
 import CalorieCalculator from '@/components/calculators/calorie-calculator';
 import DueDateCalculator from '@/components/calculators/due-date-calculator';
+import BodyFatCalculator from '@/components/calculators/body-fat-calculator';
+import BmrCalculator from '@/components/calculators/bmr-calculator';
 import type { ComponentType } from 'react';
 
 export interface Calculator {
@@ -120,6 +124,20 @@ export const calculatorCategories: CalculatorCategory[] = [
         description: 'Estimate your pregnancy due date.',
         component: DueDateCalculator,
         icon: Baby,
+      },
+      {
+        name: 'Body Fat Calculator',
+        slug: 'body-fat-calculator',
+        description: 'Estimate your body fat percentage using the U.S. Navy method.',
+        component: BodyFatCalculator,
+        icon: PersonStanding,
+      },
+      {
+        name: 'BMR Calculator',
+        slug: 'bmr-calculator',
+        description: 'Calculate your Basal Metabolic Rate (BMR).',
+        component: BmrCalculator,
+        icon: Minus,
       },
     ],
   },

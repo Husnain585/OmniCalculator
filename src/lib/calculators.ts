@@ -33,6 +33,7 @@ import {
   GitCommit,
   Wrench,
   KeyRound,
+  HandCoins,
 } from 'lucide-react';
 import BmiCalculator from '@/components/calculators/bmi-calculator';
 import SimpleInterestCalculator from '@/components/calculators/simple-interest-calculator';
@@ -57,6 +58,7 @@ import GcdCalculator from '@/components/calculators/gcd-calculator';
 import IdealWeightCalculator from '@/components/calculators/ideal-weight-calculator';
 import SalesTaxCalculator from '@/components/calculators/sales-tax-calculator';
 import PasswordGenerator from '@/components/calculators/password-generator';
+import TipCalculator from '@/components/calculators/tip-calculator';
 import type { ComponentType } from 'react';
 
 export interface Calculator {
@@ -278,6 +280,13 @@ export const calculatorCategories: CalculatorCategory[] = [
         description: 'Create strong, random passwords to enhance your security.',
         component: PasswordGenerator,
         icon: KeyRound,
+      },
+      {
+        name: 'Tip Calculator',
+        slug: 'tip-calculator',
+        description: 'Calculate tips and split the bill between friends.',
+        component: TipCalculator,
+        icon: HandCoins,
       }
     ]
   },

@@ -34,6 +34,9 @@ import {
   Wrench,
   KeyRound,
   HandCoins,
+  Table,
+  Inflation,
+  CarFront,
 } from 'lucide-react';
 import BmiCalculator from '@/components/calculators/bmi-calculator';
 import SimpleInterestCalculator from '@/components/calculators/simple-interest-calculator';
@@ -59,6 +62,9 @@ import IdealWeightCalculator from '@/components/calculators/ideal-weight-calcula
 import SalesTaxCalculator from '@/components/calculators/sales-tax-calculator';
 import PasswordGenerator from '@/components/calculators/password-generator';
 import TipCalculator from '@/components/calculators/tip-calculator';
+import AmortizationCalculator from '@/components/calculators/amortization-calculator';
+import InflationCalculator from '@/components/calculators/inflation-calculator';
+import AutoLoanCalculator from '@/components/calculators/auto-loan-calculator';
 import type { ComponentType } from 'react';
 
 export interface Calculator {
@@ -106,6 +112,20 @@ export const calculatorCategories: CalculatorCategory[] = [
         icon: Landmark,
       },
       {
+        name: 'Auto Loan Calculator',
+        slug: 'auto-loan-calculator',
+        description: 'Estimate payments for your new car.',
+        component: AutoLoanCalculator,
+        icon: CarFront,
+      },
+      {
+        name: 'Amortization Calculator',
+        slug: 'amortization-calculator',
+        description: 'View a detailed loan amortization schedule.',
+        component: AmortizationCalculator,
+        icon: Table,
+      },
+      {
         name: 'Investment Calculator',
         slug: 'investment-calculator',
         description: 'Project the growth of your investments over time.',
@@ -118,6 +138,13 @@ export const calculatorCategories: CalculatorCategory[] = [
         description: 'Plan and estimate your retirement savings.',
         component: RetirementCalculator,
         icon: CalendarClock,
+      },
+      {
+        name: 'Inflation Calculator',
+        slug: 'inflation-calculator',
+        description: 'See how inflation affects your purchasing power.',
+        component: InflationCalculator,
+        icon: TrendingUp,
       },
       {
         name: 'USD to PKR Converter',
@@ -287,8 +314,8 @@ export const calculatorCategories: CalculatorCategory[] = [
         description: 'Calculate tips and split the bill between friends.',
         component: TipCalculator,
         icon: HandCoins,
-      }
-    ]
+      },
+    ],
   },
   {
     name: 'Other',

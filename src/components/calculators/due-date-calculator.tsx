@@ -21,6 +21,7 @@ import { cn } from '@/lib/utils';
 import { Calendar as CalendarIcon, Calculator, Lightbulb } from 'lucide-react';
 import { suggestNextStep } from '@/ai/flows/suggest-next-step';
 import { Skeleton } from '@/components/ui/skeleton';
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 
 const formSchema = z.object({
   lastPeriodDate: z.date({
@@ -76,7 +77,7 @@ export default function DueDateCalculator() {
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-      <div className="lg:col-span-2">
+      <div className="lg:col-span-2 space-y-8">
         <Card>
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)}>
@@ -132,6 +133,24 @@ export default function DueDateCalculator() {
             </form>
           </Form>
         </Card>
+        <Accordion type="single" collapsible className="w-full">
+          <AccordionItem value="formula">
+            <AccordionTrigger>How is the due date estimated?</AccordionTrigger>
+            <AccordionContent>
+              <p className="mb-4">
+                The due date is estimated using Naegele's rule, a standard method for calculating the estimated due date for a pregnancy. It assumes a typical 280-day (40-week) gestation period.
+              </p>
+              <div className="bg-muted p-4 rounded-md text-center">
+                <p className="font-mono text-sm">
+                  Due Date = First Day of Last Period + 280 Days
+                </p>
+              </div>
+              <p className="mt-4 text-sm text-muted-foreground">
+                This is an estimate. An ultrasound is the most accurate method for determining the due date.
+              </p>
+            </AccordionContent>
+          </AccordionItem>
+        </Accordion>
       </div>
 
       <div>

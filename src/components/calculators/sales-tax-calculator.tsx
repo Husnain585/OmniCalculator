@@ -18,6 +18,7 @@ import { Input } from '@/components/ui/input';
 import { Calculator as CalculatorIcon, Lightbulb } from 'lucide-react';
 import { suggestNextStep } from '@/ai/flows/suggest-next-step';
 import { Skeleton } from '@/components/ui/skeleton';
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 
 const formSchema = z.object({
   price: z.coerce.number().min(0, 'Price must be a positive number'),
@@ -72,7 +73,7 @@ export default function SalesTaxCalculator() {
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-      <div className="lg:col-span-2">
+      <div className="lg:col-span-2 space-y-8">
         <Card>
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)}>
@@ -118,6 +119,28 @@ export default function SalesTaxCalculator() {
             </form>
           </Form>
         </Card>
+        <Accordion type="single" collapsible className="w-full">
+          <AccordionItem value="formula">
+            <AccordionTrigger>How is sales tax calculated?</AccordionTrigger>
+            <AccordionContent>
+              <p className="mb-4">
+                Sales tax is calculated by multiplying the pre-tax price by the tax rate (as a decimal). The total price is the pre-tax price plus the tax amount.
+              </p>
+              <div className="space-y-2">
+                <div className="bg-muted p-4 rounded-md text-center">
+                  <p className="font-mono text-sm">
+                    Tax Amount = Price × (Tax Rate / 100)
+                  </p>
+                </div>
+                <div className="bg-muted p-4 rounded-md text-center">
+                  <p className="font-mono text-sm">
+                    Total Price = Price + Tax Amount
+                  </p>
+                </div>
+              </div>
+            </AccordionContent>
+          </AccordionItem>
+        </Accordion>
       </div>
 
       <div>

@@ -26,6 +26,7 @@ import {
 import { Calculator as CalculatorIcon, Lightbulb } from 'lucide-react';
 import { suggestNextStep } from '@/ai/flows/suggest-next-step';
 import { Skeleton } from '@/components/ui/skeleton';
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 
 const formSchema = z.object({
   age: z.coerce.number().int().positive('Age must be a positive number'),
@@ -115,7 +116,7 @@ export default function CalorieCalculator() {
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-      <div className="lg:col-span-2">
+      <div className="lg:col-span-2 space-y-8">
         <Card>
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)}>
@@ -231,6 +232,25 @@ export default function CalorieCalculator() {
             </form>
           </Form>
         </Card>
+
+        <Accordion type="single" collapsible className="w-full">
+          <AccordionItem value="formula">
+            <AccordionTrigger>How are daily calorie needs calculated?</AccordionTrigger>
+            <AccordionContent>
+              <p className="mb-4">
+                This calculator first determines your Basal Metabolic Rate (BMR) using the Mifflin-St Jeor equation, and then multiplies it by an activity multiplier to estimate your Total Daily Energy Expenditure (TDEE), which is your maintenance calorie level.
+              </p>
+              <div className="bg-muted p-4 rounded-md text-center">
+                <p className="font-mono text-sm">
+                  TDEE = BMR × Activity Multiplier
+                </p>
+              </div>
+              <p className="mt-4 text-sm">
+                Weight loss goals are then calculated by subtracting a set number of calories from your TDEE (e.g., -250 for mild loss, -500 for standard loss).
+              </p>
+            </AccordionContent>
+          </AccordionItem>
+        </Accordion>
       </div>
 
       <div>

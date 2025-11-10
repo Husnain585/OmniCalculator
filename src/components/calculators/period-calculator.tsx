@@ -33,6 +33,7 @@ import { cn } from '@/lib/utils';
 import { Calendar as CalendarIcon, Calculator, Lightbulb } from 'lucide-react';
 import { suggestNextStep } from '@/ai/flows/suggest-next-step';
 import { Skeleton } from '@/components/ui/skeleton';
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 
 const formSchema = z.object({
   lastPeriodDate: z.date({
@@ -101,7 +102,7 @@ export default function PeriodCalculator() {
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-      <div className="lg:col-span-2">
+      <div className="lg:col-span-2 space-y-8">
         <Card>
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)}>
@@ -179,6 +180,24 @@ export default function PeriodCalculator() {
             </form>
           </Form>
         </Card>
+        <Accordion type="single" collapsible className="w-full">
+          <AccordionItem value="formula">
+            <AccordionTrigger>How is the cycle estimated?</AccordionTrigger>
+            <AccordionContent>
+              <p className="mb-4">
+                The estimates are based on the calendar method, assuming that ovulation occurs about 14 days before the start of the next period.
+              </p>
+              <div className="space-y-2 text-sm">
+                <p><b>Next Period:</b> Last Period Date + Cycle Length</p>
+                <p><b>Ovulation Day:</b> Next Period Date - 14 Days</p>
+                <p><b>Fertile Window:</b> From 5 days before ovulation to 1 day after.</p>
+              </div>
+               <p className="mt-4 text-sm text-muted-foreground">
+                This method is an estimate and can be inaccurate if your cycles are irregular.
+              </p>
+            </AccordionContent>
+          </AccordionItem>
+        </Accordion>
       </div>
 
       <div>

@@ -99,7 +99,7 @@ export default function MortgageCalculator() {
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-      <div className="lg:col-span-2">
+      <div className="lg:col-span-2 space-y-8">
         <Card>
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)}>
@@ -173,6 +173,26 @@ export default function MortgageCalculator() {
             </form>
           </Form>
         </Card>
+
+        <Accordion type="single" collapsible className="w-full">
+          <AccordionItem value="formula">
+            <AccordionTrigger>How is the mortgage payment calculated?</AccordionTrigger>
+            <AccordionContent>
+              <p className="mb-4">
+                The monthly mortgage payment is calculated using the standard loan amortization formula. This does not include costs like property taxes or insurance (PITI).
+              </p>
+              <div className="bg-muted p-4 rounded-md text-center font-mono text-sm overflow-x-auto">
+                 M = P [ r(1+r)^n ] / [ (1+r)^n – 1]
+              </div>
+              <ul className="mt-4 list-disc list-inside space-y-1 text-sm">
+                <li><b>M</b> = Monthly Payment</li>
+                <li><b>P</b> = Principal Loan Amount (Home Price - Down Payment)</li>
+                <li><b>r</b> = Monthly Interest Rate (annual rate / 12)</li>
+                <li><b>n</b> = Number of Payments (loan term in years * 12)</li>
+              </ul>
+            </AccordionContent>
+          </AccordionItem>
+        </Accordion>
       </div>
 
       <div>

@@ -33,6 +33,7 @@ import { Area, AreaChart, CartesianGrid, XAxis, YAxis } from 'recharts';
 import { Calculator as CalculatorIcon, Lightbulb } from 'lucide-react';
 import { suggestNextStep } from '@/ai/flows/suggest-next-step';
 import { Skeleton } from '@/components/ui/skeleton';
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 
 const formSchema = z.object({
   loanAmount: z.coerce.number().positive('Loan amount must be positive'),
@@ -168,33 +169,55 @@ export default function AmortizationCalculator() {
         </Card>
 
         {schedule.length > 0 && (
-          <Card>
-            <CardHeader><CardTitle>Amortization Schedule</CardTitle></CardHeader>
-            <CardContent>
-              <div className="max-h-96 overflow-auto">
-                <Table>
-                  <TableHeader className="sticky top-0 bg-background">
-                    <TableRow>
-                      <TableHead className="w-1/4">Month</TableHead>
-                      <TableHead className="w-1/4 text-right">Principal</TableHead>
-                      <TableHead className="w-1/4 text-right">Interest</TableHead>
-                      <TableHead className="w-1/4 text-right">Balance</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {schedule.map((entry) => (
-                      <TableRow key={entry.month}>
-                        <TableCell>{entry.month}</TableCell>
-                        <TableCell className="text-right">${entry.principal.toFixed(2)}</TableCell>
-                        <TableCell className="text-right">${entry.interest.toFixed(2)}</TableCell>
-                        <TableCell className="text-right">${entry.balance.toFixed(2)}</TableCell>
+          <>
+            <Card>
+              <CardHeader><CardTitle>Amortization Schedule</CardTitle></CardHeader>
+              <CardContent>
+                <div className="max-h-96 overflow-auto">
+                  <Table>
+                    <TableHeader className="sticky top-0 bg-background">
+                      <TableRow>
+                        <TableHead className="w-1/4">Month</TableHead>
+                        <TableHead className="w-1/4 text-right">Principal</TableHead>
+                        <TableHead className="w-1/4 text-right">Interest</TableHead>
+                        <TableHead className="w-1/4 text-right">Balance</TableHead>
                       </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              </div>
-            </CardContent>
-          </Card>
+                    </TableHeader>
+                    <TableBody>
+                      {schedule.map((entry) => (
+                        <TableRow key={entry.month}>
+                          <TableCell>{entry.month}</TableCell>
+                          <TableCell className="text-right">${entry.principal.toFixed(2)}</TableCell>
+                          <TableCell className="text-right">${entry.interest.toFixed(2)}</TableCell>
+                          <TableCell className="text-right">${entry.balance.toFixed(2)}</TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </div>
+              </CardContent>
+            </Card>
+            
+            <Accordion type="single" collapsible className="w-full">
+              <AccordionItem value="formula">
+                <AccordionTrigger>How are the payments calculated?</AccordionTrigger>
+                <AccordionContent>
+                   <p className="mb-4">
+                    The monthly payment is calculated using the standard formula for an amortizing loan:
+                  </p>
+                  <div className="bg-muted p-4 rounded-md text-center font-mono text-sm overflow-x-auto">
+                    M = P [ r(1+r)^n ] / [ (1+r)^n – 1]
+                  </div>
+                   <ul className="mt-4 list-disc list-inside space-y-1 text-sm">
+                    <li><b>M</b> = Monthly Payment</li>
+                    <li><b>P</b> = Principal Loan Amount</li>
+                    <li><b>r</b> = Monthly Interest Rate (annual rate / 12)</li>
+                    <li><b>n</b> = Number of Payments (loan term in years * 12)</li>
+                  </ul>
+                </AccordionContent>
+              </AccordionItem>
+            </Accordion>
+          </>
         )}
       </div>
 

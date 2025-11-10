@@ -18,6 +18,7 @@ import { Input } from '@/components/ui/input';
 import { Calculator as CalculatorIcon, Lightbulb } from 'lucide-react';
 import { suggestNextStep } from '@/ai/flows/suggest-next-step';
 import { Skeleton } from '@/components/ui/skeleton';
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 
 const currentYear = new Date().getFullYear();
 
@@ -90,7 +91,7 @@ export default function InflationCalculator() {
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-      <div className="lg:col-span-2">
+      <div className="lg:col-span-2 space-y-8">
         <Card>
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)}>
@@ -137,6 +138,24 @@ export default function InflationCalculator() {
             </form>
           </Form>
         </Card>
+        <Accordion type="single" collapsible className="w-full">
+          <AccordionItem value="formula">
+            <AccordionTrigger>How is the future value calculated?</AccordionTrigger>
+            <AccordionContent>
+              <p className="mb-4">
+                The future value of an amount of money, considering inflation, is calculated using the formula for compound interest.
+              </p>
+              <div className="bg-muted p-4 rounded-md text-center">
+                <p className="font-mono text-sm">
+                  Future Value = Initial Amount × (1 + Inflation Rate) ^ Years
+                </p>
+              </div>
+              <p className="mt-4 text-sm">
+                The purchasing power decrease is the percentage reduction in the value of the money from the start year to the end year.
+              </p>
+            </AccordionContent>
+          </AccordionItem>
+        </Accordion>
       </div>
 
       <div>

@@ -25,6 +25,7 @@ import {
 import { Calculator as CalculatorIcon, Lightbulb, Percent } from 'lucide-react';
 import { suggestNextStep } from '@/ai/flows/suggest-next-step';
 import { Skeleton } from '@/components/ui/skeleton';
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 
 const formSchema = z.object({
     calculationType: z.string(),
@@ -126,7 +127,7 @@ export default function PercentageCalculator() {
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-      <div className="lg:col-span-2">
+      <div className="lg:col-span-2 space-y-8">
         <Card>
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)}>
@@ -199,6 +200,36 @@ export default function PercentageCalculator() {
             </form>
           </Form>
         </Card>
+        <Accordion type="single" collapsible className="w-full">
+          <AccordionItem value="formula">
+            <AccordionTrigger>How are percentages calculated?</AccordionTrigger>
+            <AccordionContent>
+              <p className="mb-4">
+                The formulas vary based on the type of calculation you select.
+              </p>
+              <div className="space-y-4 text-sm">
+                 <div>
+                  <h4 className="font-semibold">What is X% of Y?</h4>
+                  <p className="font-mono bg-muted p-2 rounded-md my-1">
+                    Result = (X / 100) * Y
+                  </p>
+                </div>
+                 <div>
+                  <h4 className="font-semibold">X is what percent of Y?</h4>
+                  <p className="font-mono bg-muted p-2 rounded-md my-1">
+                    Result = (X / Y) * 100
+                  </p>
+                </div>
+                 <div>
+                  <h4 className="font-semibold">Percentage Change from X to Y</h4>
+                  <p className="font-mono bg-muted p-2 rounded-md my-1">
+                    Result = ((Y - X) / X) * 100
+                  </p>
+                </div>
+              </div>
+            </AccordionContent>
+          </AccordionItem>
+        </Accordion>
       </div>
 
       <div>

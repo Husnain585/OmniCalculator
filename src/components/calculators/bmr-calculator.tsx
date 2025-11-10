@@ -19,6 +19,7 @@ import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Calculator as CalculatorIcon, Lightbulb } from 'lucide-react';
 import { suggestNextStep } from '@/ai/flows/suggest-next-step';
 import { Skeleton } from '@/components/ui/skeleton';
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 
 const formSchema = z.object({
   age: z.coerce.number().int().positive('Age must be a positive number'),
@@ -88,7 +89,7 @@ export default function BmrCalculator() {
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-      <div className="lg:col-span-2">
+      <div className="lg:col-span-2 space-y-8">
         <Card>
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)}>
@@ -179,6 +180,33 @@ export default function BmrCalculator() {
             </form>
           </Form>
         </Card>
+         <Accordion type="single" collapsible className="w-full">
+          <AccordionItem value="formula">
+            <AccordionTrigger>How is BMR calculated?</AccordionTrigger>
+            <AccordionContent>
+              <p className="mb-4">
+                This calculator uses the Mifflin-St Jeor equation, which is considered more accurate than the older Harris-Benedict equation. The formulas are:
+              </p>
+              <div className="space-y-4">
+                  <div>
+                    <h4 className="font-semibold">For Men:</h4>
+                    <p className="font-mono bg-muted p-4 rounded-md my-2 text-sm">
+                        BMR = 10 * weight (kg) + 6.25 * height (cm) - 5 * age (y) + 5
+                    </p>
+                  </div>
+                  <div>
+                    <h4 className="font-semibold">For Women:</h4>
+                    <p className="font-mono bg-muted p-4 rounded-md my-2 text-sm">
+                        BMR = 10 * weight (kg) + 6.25 * height (cm) - 5 * age (y) - 161
+                    </p>
+                  </div>
+              </div>
+              <p className="mt-4 text-sm text-muted-foreground">
+                BMR represents the number of calories your body needs to perform basic life-sustaining functions at rest.
+              </p>
+            </AccordionContent>
+          </AccordionItem>
+        </Accordion>
       </div>
 
       <div>

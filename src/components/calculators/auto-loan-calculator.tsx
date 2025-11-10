@@ -18,6 +18,7 @@ import { Input } from '@/components/ui/input';
 import { Calculator as CalculatorIcon, Lightbulb } from 'lucide-react';
 import { suggestNextStep } from '@/ai/flows/suggest-next-step';
 import { Skeleton } from '@/components/ui/skeleton';
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 
 const formSchema = z.object({
   vehiclePrice: z.coerce.number().positive('Vehicle price must be positive'),
@@ -105,7 +106,7 @@ export default function AutoLoanCalculator() {
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-      <div className="lg:col-span-2">
+      <div className="lg:col-span-2 space-y-8">
         <Card>
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)}>
@@ -166,6 +167,31 @@ export default function AutoLoanCalculator() {
             </form>
           </Form>
         </Card>
+
+        {result !== null && (
+          <Accordion type="single" collapsible className="w-full">
+            <AccordionItem value="formula">
+              <AccordionTrigger>How is the auto loan calculated?</AccordionTrigger>
+              <AccordionContent>
+                <p className="mb-4">
+                  The total loan amount is calculated first by adding sales tax to the vehicle price and then subtracting the down payment and trade-in value. The monthly payment is then determined using the standard loan amortization formula.
+                </p>
+                <div className="bg-muted p-4 rounded-md text-center font-mono text-sm overflow-x-auto">
+                  Loan Amount = (Vehicle Price - Trade-in) + Sales Tax - Down Payment
+                </div>
+                <div className="bg-muted p-4 rounded-md text-center font-mono text-sm overflow-x-auto mt-2">
+                  M = P [ r(1+r)^n ] / [ (1+r)^n – 1]
+                </div>
+                <ul className="mt-4 list-disc list-inside space-y-1 text-sm">
+                  <li><b>M</b> = Monthly Payment</li>
+                  <li><b>P</b> = Principal Loan Amount</li>
+                  <li><b>r</b> = Monthly Interest Rate</li>
+                  <li><b>n</b> = Number of Payments (Loan Term in Months)</li>
+                </ul>
+              </AccordionContent>
+            </AccordionItem>
+          </Accordion>
+        )}
       </div>
 
       <div>

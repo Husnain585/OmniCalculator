@@ -18,6 +18,7 @@ import { Input } from '@/components/ui/input';
 import { Calculator as CalculatorIcon, Lightbulb } from 'lucide-react';
 import { suggestNextStep } from '@/ai/flows/suggest-next-step';
 import { Skeleton } from '@/components/ui/skeleton';
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 
 const formSchema = z.object({
   currentAge: z.coerce.number().int().positive('Current age must be positive'),
@@ -94,7 +95,7 @@ export default function RetirementCalculator() {
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-      <div className="lg:col-span-2">
+      <div className="lg:col-span-2 space-y-8">
         <Card>
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)}>
@@ -164,7 +165,7 @@ export default function RetirementCalculator() {
                         <FormControl>
                           <Input type="number" step="0.1" placeholder="e.g., 7" {...field} />
                         </FormControl>
-                         <div>Average stock market return is 7-10%.</div>
+                         <FormDescription>Average stock market return is 7-10%.</FormDescription>
                         <FormMessage />
                       </FormItem>
                     )}
@@ -182,6 +183,26 @@ export default function RetirementCalculator() {
             </form>
           </Form>
         </Card>
+        <Accordion type="single" collapsible className="w-full">
+          <AccordionItem value="formula">
+            <AccordionTrigger>How are retirement savings calculated?</AccordionTrigger>
+            <AccordionContent>
+              <p className="mb-4">
+                This calculation is based on the future value of an initial investment combined with the future value of a series of regular contributions (an annuity).
+              </p>
+              <div className="bg-muted p-4 rounded-md text-center font-mono text-sm overflow-x-auto">
+                FV = P(1+r)^n + C [ ((1+r)^n - 1) / r ]
+              </div>
+              <ul className="mt-4 list-disc list-inside space-y-1 text-sm">
+                <li><b>FV</b> = Future Value (Retirement Savings)</li>
+                <li><b>P</b> = Current Savings (Principal)</li>
+                <li><b>C</b> = Monthly Contribution</li>
+                <li><b>r</b> = Monthly Interest Rate (annual rate / 12)</li>
+                <li><b>n</b> = Number of Months (years to retirement * 12)</li>
+              </ul>
+            </AccordionContent>
+          </AccordionItem>
+        </Accordion>
       </div>
 
       <div>

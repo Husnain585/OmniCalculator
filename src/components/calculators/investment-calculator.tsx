@@ -18,6 +18,7 @@ import { Input } from '@/components/ui/input';
 import { Calculator as CalculatorIcon, Lightbulb } from 'lucide-react';
 import { suggestNextStep } from '@/ai/flows/suggest-next-step';
 import { Skeleton } from '@/components/ui/skeleton';
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 
 const formSchema = z.object({
   initialInvestment: z.coerce.number().min(0, 'Initial investment cannot be negative'),
@@ -87,7 +88,7 @@ export default function InvestmentCalculator() {
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-      <div className="lg:col-span-2">
+      <div className="lg:col-span-2 space-y-8">
         <Card>
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)}>
@@ -164,6 +165,26 @@ export default function InvestmentCalculator() {
             </form>
           </Form>
         </Card>
+        <Accordion type="single" collapsible className="w-full">
+          <AccordionItem value="formula">
+            <AccordionTrigger>How is investment growth calculated?</AccordionTrigger>
+            <AccordionContent>
+              <p className="mb-4">
+                The future value of an investment with regular contributions is calculated using the formula for the future value of a series, combined with the compound interest formula for the initial lump sum.
+              </p>
+              <div className="bg-muted p-4 rounded-md text-center font-mono text-sm overflow-x-auto">
+                FV = P(1+r)^n + C [ ((1+r)^n - 1) / r ]
+              </div>
+              <ul className="mt-4 list-disc list-inside space-y-1 text-sm">
+                <li><b>FV</b> = Future Value</li>
+                <li><b>P</b> = Initial Investment (Principal)</li>
+                <li><b>C</b> = Monthly Contribution</li>
+                <li><b>r</b> = Monthly Interest Rate (annual rate / 12)</li>
+                <li><b>n</b> = Number of Months (years * 12)</li>
+              </ul>
+            </AccordionContent>
+          </AccordionItem>
+        </Accordion>
       </div>
 
       <div>

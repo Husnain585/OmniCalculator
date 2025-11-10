@@ -18,6 +18,7 @@ import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Label } from '@/components/ui/label';
 import { Calculator as CalculatorIcon, X, Plus, Minus, Divide } from 'lucide-react';
 import { Separator } from '@/components/ui/separator';
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 
 const formSchema = z.object({
   n1: z.coerce.number().int('Numerator must be an integer.'),
@@ -116,7 +117,7 @@ export default function FractionCalculator() {
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-      <div className="lg:col-span-2">
+      <div className="lg:col-span-2 space-y-8">
         <Card>
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
@@ -207,6 +208,26 @@ export default function FractionCalculator() {
             </form>
           </Form>
         </Card>
+        
+        <Accordion type="single" collapsible className="w-full">
+          <AccordionItem value="formula">
+            <AccordionTrigger>How are fractions calculated?</AccordionTrigger>
+            <AccordionContent>
+              <p className="mb-4">
+                Fraction operations follow standard mathematical rules. For addition and subtraction, a common denominator is found. For multiplication, numerators and denominators are multiplied directly. For division, the second fraction is inverted and then multiplied.
+              </p>
+              <div className="space-y-2 text-sm">
+                <p><b>Addition:</b> (n1/d1) + (n2/d2) = (n1*d2 + n2*d1) / (d1*d2)</p>
+                <p><b>Subtraction:</b> (n1/d1) - (n2/d2) = (n1*d2 - n2*d1) / (d1*d2)</p>
+                <p><b>Multiplication:</b> (n1/d1) * (n2/d2) = (n1*n2) / (d1*d2)</p>
+                <p><b>Division:</b> (n1/d1) / (n2/d2) = (n1*d2) / (d1*n2)</p>
+              </div>
+              <p className="mt-4 text-sm text-muted-foreground">
+                The result is then simplified by dividing the numerator and denominator by their greatest common divisor (GCD).
+              </p>
+            </AccordionContent>
+          </AccordionItem>
+        </Accordion>
       </div>
 
       <div>

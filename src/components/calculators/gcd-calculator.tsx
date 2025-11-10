@@ -18,6 +18,7 @@ import { Input } from '@/components/ui/input';
 import { Calculator as CalculatorIcon, Lightbulb } from 'lucide-react';
 import { suggestNextStep } from '@/ai/flows/suggest-next-step';
 import { Skeleton } from '@/components/ui/skeleton';
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 
 const formSchema = z.object({
   numberA: z.coerce.number().int('Must be an integer'),
@@ -73,7 +74,7 @@ export default function GcdCalculator() {
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-      <div className="lg:col-span-2">
+      <div className="lg:col-span-2 space-y-8">
         <Card>
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)}>
@@ -122,6 +123,25 @@ export default function GcdCalculator() {
             </form>
           </Form>
         </Card>
+
+        <Accordion type="single" collapsible className="w-full">
+          <AccordionItem value="formula">
+            <AccordionTrigger>How is the GCD calculated?</AccordionTrigger>
+            <AccordionContent>
+              <p className="mb-4">
+                This calculator uses the Euclidean algorithm to find the greatest common divisor (GCD) of two integers. It's an efficient method that repeatedly uses the division algorithm.
+              </p>
+              <div className="bg-muted p-4 rounded-md text-center">
+                <p className="font-mono text-sm">
+                  gcd(a, b) = gcd(b, a % b)
+                </p>
+              </div>
+              <p className="mt-4 text-sm">
+                The process continues until the remainder (a % b) is 0. The GCD is the last non-zero remainder.
+              </p>
+            </AccordionContent>
+          </AccordionItem>
+        </Accordion>
       </div>
 
       <div>

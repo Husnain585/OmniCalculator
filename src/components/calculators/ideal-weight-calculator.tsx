@@ -19,6 +19,7 @@ import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Calculator as CalculatorIcon, Lightbulb } from 'lucide-react';
 import { suggestNextStep } from '@/ai/flows/suggest-next-step';
 import { Skeleton } from '@/components/ui/skeleton';
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 
 const formSchema = z.object({
   height: z.coerce.number().positive('Height must be positive'),
@@ -84,7 +85,7 @@ export default function IdealWeightCalculator() {
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-      <div className="lg:col-span-2">
+      <div className="lg:col-span-2 space-y-8">
         <Card>
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)}>
@@ -147,6 +148,31 @@ export default function IdealWeightCalculator() {
             </form>
           </Form>
         </Card>
+        <Accordion type="single" collapsible className="w-full">
+          <AccordionItem value="formula">
+            <AccordionTrigger>How is ideal weight calculated?</AccordionTrigger>
+            <AccordionContent>
+              <p className="mb-4">
+                This calculator uses several common formulas to estimate an ideal weight range. The most common formulas are based on height and gender.
+              </p>
+              <div className="space-y-4 text-sm">
+                <div>
+                  <h4 className="font-semibold">Robinson Formula (1983)</h4>
+                  <p>Male: 52 kg + 1.9 kg per inch over 5 feet</p>
+                  <p>Female: 49 kg + 1.7 kg per inch over 5 feet</p>
+                </div>
+                <div>
+                  <h4 className="font-semibold">Devine Formula (1974)</h4>
+                  <p>Male: 50 kg + 2.3 kg per inch over 5 feet</p>
+                  <p>Female: 45.5 kg + 2.3 kg per inch over 5 feet</p>
+                </div>
+              </div>
+              <p className="mt-4 text-sm text-muted-foreground">
+                These formulas provide an estimated healthy weight range but do not account for individual differences in body composition, such as muscle mass.
+              </p>
+            </AccordionContent>
+          </AccordionItem>
+        </Accordion>
       </div>
 
       <div>

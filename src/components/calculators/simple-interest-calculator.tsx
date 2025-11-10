@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState } from 'react';
@@ -211,37 +212,24 @@ export default function SimpleInterestCalculator() {
                 </div>
             )}
           </CardContent>
-          {result && (
-            <CardFooter className="flex justify-center gap-2">
-              <Button variant="ghost" size="icon">
-                <Code className="h-4 w-4" />
-              </Button>
-              <Button variant="ghost" size="icon">
-                <Share2 className="h-4 w-4" />
-              </Button>
-            </CardFooter>
-          )}
         </Card>
       </div>
 
       <div className="lg:col-span-3 mt-8">
-        <Accordion type="single" collapsible>
+        <Accordion type="single" collapsible className="w-full">
           <AccordionItem value="explanation">
-            <AccordionTrigger>
-              How is Simple Interest calculated?
-            </AccordionTrigger>
+            <AccordionTrigger>How is Simple Interest calculated?</AccordionTrigger>
             <AccordionContent>
-              <p>
-                Simple interest is a quick and easy method of calculating the
-                interest charge on a loan. The formula is:
+              <p className="mb-4">
+                Simple interest is a quick method for calculating the interest charge on a loan or investment. It is determined by multiplying the principal amount by the interest rate and the time period.
               </p>
-              <p className="font-mono bg-muted p-4 rounded-md my-4">
-                Simple Interest = Principal × Rate × Time
-              </p>
-              <p>
-                Where 'Principal' is the initial amount of money, 'Rate' is the
-                annual interest rate (in decimal), and 'Time' is the number of
-                periods (usually years).
+              <div className="bg-muted p-4 rounded-md text-center">
+                <p className="font-mono text-lg">
+                  <span className="font-semibold">Interest</span> = <span className="text-primary">Principal</span> &times; <span className="text-primary">Rate</span> &times; <span className="text-primary">Time</span>
+                </p>
+              </div>
+              <p className="mt-4">
+                Where 'Principal' is the initial amount, 'Rate' is the annual interest rate in decimal form, and 'Time' is the number of years.
               </p>
             </AccordionContent>
           </AccordionItem>

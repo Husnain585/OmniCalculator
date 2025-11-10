@@ -31,6 +31,8 @@ import {
   Footprints,
   Briefcase,
   GitCommit,
+  Wrench,
+  KeyRound,
 } from 'lucide-react';
 import BmiCalculator from '@/components/calculators/bmi-calculator';
 import SimpleInterestCalculator from '@/components/calculators/simple-interest-calculator';
@@ -52,6 +54,9 @@ import CurrencyConverter from '@/components/calculators/currency-converter';
 import InvestmentCalculator from '@/components/calculators/investment-calculator';
 import PaceCalculator from '@/components/calculators/pace-calculator';
 import GcdCalculator from '@/components/calculators/gcd-calculator';
+import IdealWeightCalculator from '@/components/calculators/ideal-weight-calculator';
+import SalesTaxCalculator from '@/components/calculators/sales-tax-calculator';
+import PasswordGenerator from '@/components/calculators/password-generator';
 import type { ComponentType } from 'react';
 
 export interface Calculator {
@@ -98,7 +103,7 @@ export const calculatorCategories: CalculatorCategory[] = [
         component: LoanCalculator,
         icon: Landmark,
       },
-       {
+      {
         name: 'Investment Calculator',
         slug: 'investment-calculator',
         description: 'Project the growth of your investments over time.',
@@ -118,7 +123,14 @@ export const calculatorCategories: CalculatorCategory[] = [
         description: 'Convert US Dollars to Pakistani Rupees.',
         component: CurrencyConverter,
         icon: ArrowRightLeft,
-      }
+      },
+      {
+        name: 'Sales Tax Calculator',
+        slug: 'sales-tax-calculator',
+        description: 'Quickly calculate sales tax and total price.',
+        component: SalesTaxCalculator,
+        icon: Receipt,
+      },
     ],
   },
   {
@@ -144,7 +156,8 @@ export const calculatorCategories: CalculatorCategory[] = [
       {
         name: 'Calorie Calculator',
         slug: 'calorie-calculator',
-        description: 'Estimate your daily calorie needs for maintenance or weight loss.',
+        description:
+          'Estimate your daily calorie needs for maintenance or weight loss.',
         component: CalorieCalculator,
         icon: Flame,
       },
@@ -158,7 +171,8 @@ export const calculatorCategories: CalculatorCategory[] = [
       {
         name: 'Body Fat Calculator',
         slug: 'body-fat-calculator',
-        description: 'Estimate your body fat percentage using the U.S. Navy method.',
+        description:
+          'Estimate your body fat percentage using the U.S. Navy method.',
         component: BodyFatCalculator,
         icon: PersonStanding,
       },
@@ -168,6 +182,13 @@ export const calculatorCategories: CalculatorCategory[] = [
         description: 'Calculate your Basal Metabolic Rate (BMR).',
         component: BmrCalculator,
         icon: Minus,
+      },
+      {
+        name: 'Ideal Weight Calculator',
+        slug: 'ideal-weight-calculator',
+        description: 'Find your ideal weight based on height and gender.',
+        component: IdealWeightCalculator,
+        icon: Dumbbell,
       },
     ],
   },
@@ -191,10 +212,11 @@ export const calculatorCategories: CalculatorCategory[] = [
         component: FractionCalculator,
         icon: Divide,
       },
-       {
+      {
         name: 'Scientific Calculator',
         slug: 'scientific-calculator',
-        description: 'A powerful calculator for scientific and engineering calculations.',
+        description:
+          'A powerful calculator for scientific and engineering calculations.',
         component: ScientificCalculator,
         icon: FlaskConical,
       },
@@ -211,7 +233,7 @@ export const calculatorCategories: CalculatorCategory[] = [
         description: 'Find the Greatest Common Divisor of two integers.',
         component: GcdCalculator,
         icon: GitCommit,
-      }
+      },
     ],
   },
   {
@@ -220,13 +242,13 @@ export const calculatorCategories: CalculatorCategory[] = [
     description: 'Track your fitness goals and progress.',
     icon: Dumbbell,
     calculators: [
-        {
-            name: 'Pace Calculator',
-            slug: 'pace-calculator',
-            description: 'Calculate your running pace, time, or distance.',
-            component: PaceCalculator,
-            icon: Footprints,
-        }
+      {
+        name: 'Pace Calculator',
+        slug: 'pace-calculator',
+        description: 'Calculate your running pace, time, or distance.',
+        component: PaceCalculator,
+        icon: Footprints,
+      },
     ],
   },
   {
@@ -243,6 +265,21 @@ export const calculatorCategories: CalculatorCategory[] = [
         icon: Building,
       },
     ],
+  },
+  {
+    name: 'Utilities',
+    slug: 'utilities',
+    description: 'Handy tools for various everyday tasks.',
+    icon: Wrench,
+    calculators: [
+      {
+        name: 'Password Generator',
+        slug: 'password-generator',
+        description: 'Create strong, random passwords to enhance your security.',
+        component: PasswordGenerator,
+        icon: KeyRound,
+      }
+    ]
   },
   {
     name: 'Other',

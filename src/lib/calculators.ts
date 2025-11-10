@@ -28,6 +28,9 @@ import {
   FlaskConical,
   Shuffle,
   ArrowRightLeft,
+  Footprints,
+  Briefcase,
+  GitCommit,
 } from 'lucide-react';
 import BmiCalculator from '@/components/calculators/bmi-calculator';
 import SimpleInterestCalculator from '@/components/calculators/simple-interest-calculator';
@@ -46,6 +49,9 @@ import FractionCalculator from '@/components/calculators/fraction-calculator';
 import ScientificCalculator from '@/components/calculators/scientific-calculator';
 import RandomNumberGenerator from '@/components/calculators/random-number-generator';
 import CurrencyConverter from '@/components/calculators/currency-converter';
+import InvestmentCalculator from '@/components/calculators/investment-calculator';
+import PaceCalculator from '@/components/calculators/pace-calculator';
+import GcdCalculator from '@/components/calculators/gcd-calculator';
 import type { ComponentType } from 'react';
 
 export interface Calculator {
@@ -91,6 +97,13 @@ export const calculatorCategories: CalculatorCategory[] = [
         description: 'Calculate payments for any type of loan.',
         component: LoanCalculator,
         icon: Landmark,
+      },
+       {
+        name: 'Investment Calculator',
+        slug: 'investment-calculator',
+        description: 'Project the growth of your investments over time.',
+        component: InvestmentCalculator,
+        icon: Briefcase,
       },
       {
         name: 'Retirement Calculator',
@@ -191,6 +204,13 @@ export const calculatorCategories: CalculatorCategory[] = [
         description: 'Generate a random number within a specified range.',
         component: RandomNumberGenerator,
         icon: Shuffle,
+      },
+      {
+        name: 'GCD Calculator',
+        slug: 'gcd-calculator',
+        description: 'Find the Greatest Common Divisor of two integers.',
+        component: GcdCalculator,
+        icon: GitCommit,
       }
     ],
   },
@@ -199,7 +219,15 @@ export const calculatorCategories: CalculatorCategory[] = [
     slug: 'fitness',
     description: 'Track your fitness goals and progress.',
     icon: Dumbbell,
-    calculators: [],
+    calculators: [
+        {
+            name: 'Pace Calculator',
+            slug: 'pace-calculator',
+            description: 'Calculate your running pace, time, or distance.',
+            component: PaceCalculator,
+            icon: Footprints,
+        }
+    ],
   },
   {
     name: 'Construction',

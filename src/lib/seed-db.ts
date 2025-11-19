@@ -1,9 +1,9 @@
 // A script to seed the Firestore database with initial calculator data.
 // To run: `npm run db:seed`
 // Make sure you have configured your Firebase Admin credentials in `.env`
-
-import { db } from './firebase';
-import { collection, writeBatch, getDocs } from 'firebase/firestore';
+import 'dotenv/config';
+import { db } from './firebase-admin'; // Use admin db for seeding
+import { collection, writeBatch, getDocs, doc } from 'firebase/firestore';
 import { initialCalculators, initialCalculatorData } from './calculators';
 
 async function seedDatabase() {
@@ -25,26 +25,26 @@ async function seedDatabase() {
 
   // Seed categories
   initialCalculatorData.forEach((category) => {
-    const categoryDoc = doc(categoriesCol, category.slug);
-    // We don't want to store the icon component itself
+    const categoryRef = doc(categoriesCol, category.slug);
     const { icon, ...rest } = category;
-    batch.set(categoryDoc, {
+    batch.set(categoryRef, {
         ...rest,
         icon: icon.displayName || 'Calculator'
     });
   });
+  console.log(`${initialCalculatorData.length} categories queued for seeding.`);
 
   // Seed calculators
   initialCalculators.forEach((calculator) => {
-    const calcDoc = doc(calculatorsCol, calculator.slug);
-    // We don't want to store the component and icon React components
+    const calcRef = doc(calculatorsCol, calculator.slug);
     const { componentName, iconName, ...rest } = calculator as any;
-    batch.set(calcDoc, {
+    batch.set(calcRef, {
         ...rest,
         component: componentName,
         icon: iconName
     });
   });
+  console.log(`${initialCalculators.length} calculators queued for seeding.`);
 
   try {
     await batch.commit();
@@ -54,4 +54,10 @@ async function seedDatabase() {
   }
 }
 
-seedDatabase();
+seedDatabase().then(() => {
+    console.log('Seed script finished.');
+    process.exit(0);
+}).catch(err => {
+    console.error('Seed script failed:', err);
+    process.exit(1);
+});

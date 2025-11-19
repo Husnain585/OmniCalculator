@@ -1,5 +1,6 @@
 import * as admin from 'firebase-admin';
 import { getApps } from 'firebase-admin/app';
+import { getFirestore } from 'firebase-admin/firestore';
 
 // IMPORTANT: Do not expose this file to the client-side.
 // It should only be used in server-side code (e.g., API routes, server components).
@@ -21,4 +22,8 @@ if (!getApps().length) {
   }
 }
 
+const adminAuth = admin.auth();
+const db = getFirestore();
+
+export { adminAuth, db };
 export default admin;

@@ -26,6 +26,7 @@ import { hasAdminUser } from '@/lib/auth-actions';
 import { Skeleton } from '@/components/ui/skeleton';
 
 const formSchema = z.object({
+  fullName: z.string().min(2, { message: 'Full name is required.' }),
   email: z.string().email({ message: 'Invalid email address.' }),
   password: z.string().min(6, { message: 'Password must be at least 6 characters.' }),
   registerAsAdmin: z.boolean().default(false),
@@ -64,6 +65,7 @@ export default function RegisterPage() {
   const form = useForm<RegisterFormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
+      fullName: '',
       email: '',
       password: '',
       registerAsAdmin: false,
@@ -75,15 +77,22 @@ export default function RegisterPage() {
     try {
       const createFirebaseUser = httpsCallable(functions, 'createFirebaseUser');
       await createFirebaseUser({
+        fullName: data.fullName,
         email: data.email,
         password: data.password,
         setAdmin: data.registerAsAdmin,
       });
 
       // After successful creation, log the user in
-      await signInWithEmailAndPassword(auth, data.email, data.password);
+      const userCredential = await signInWithEmailAndPassword(auth, data.email, data.password);
       
-      router.push('/');
+      if (data.registerAsAdmin) {
+        // Force a token refresh to get admin claims
+        await userCredential.user.getIdToken(true);
+        router.push('/admin');
+      } else {
+        router.push('/');
+      }
       router.refresh();
     } catch (error: any) {
       console.error('Registration error:', error);
@@ -104,11 +113,28 @@ export default function RegisterPage() {
                  <Calculator className="h-10 w-10 text-primary mx-auto mb-2" />
                 <h1 className="text-3xl font-bold">Create an account</h1>
                 <p className="text-balance text-muted-foreground">
-                    Enter your email below to create your account
+                    Enter your details below to create your account
                 </p>
             </div>
             <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="grid gap-4">
+                <FormField
+                    control={form.control}
+                    name="fullName"
+                    render={({ field }) => (
+                    <FormItem>
+                        <FormLabel>Full Name</FormLabel>
+                        <FormControl>
+                        <Input
+                            placeholder="Jane Doe"
+                            {...field}
+                            disabled={loading}
+                        />
+                        </FormControl>
+                        <FormMessage />
+                    </FormItem>
+                    )}
+                />
                 <FormField
                     control={form.control}
                     name="email"

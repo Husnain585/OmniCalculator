@@ -1,7 +1,7 @@
 "use client";
 
 import Link from 'next/link';
-import { CircleUser, Calculator, Search, LogOut, Shield } from 'lucide-react';
+import { CircleUser, Calculator, Search, LogOut, Shield, FilePenLine } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
@@ -17,6 +17,7 @@ import { getAuth, signOut } from 'firebase/auth';
 import { app } from '@/lib/firebase';
 import { useRouter } from 'next/navigation';
 import { useState, useEffect } from 'react';
+import { Skeleton } from '@/components/ui/skeleton';
 
 export default function AppHeader() {
   const { user, loading } = useAuth();
@@ -63,51 +64,55 @@ export default function AppHeader() {
         />
       </div>
 
-      {!loading && (
-        <>
-          {user ? (
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="secondary" size="icon" className="rounded-full">
-                  <CircleUser className="h-5 w-5" />
-                  <span className="sr-only">Toggle user menu</span>
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
-                <DropdownMenuLabel>{user.email}</DropdownMenuLabel>
-                <DropdownMenuSeparator />
-                {isAdmin && (
-                  <DropdownMenuItem asChild>
-                    <Link href="/admin">
-                      <Shield className="mr-2 h-4 w-4" />
-                      Admin Dashboard
-                    </Link>
-                  </DropdownMenuItem>
-                )}
-                <DropdownMenuItem asChild>
-                  <Link href="/profile">
-                    <CircleUser className="mr-2 h-4 w-4" />
-                    Profile
-                  </Link>
-                </DropdownMenuItem>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={handleLogout}>
-                  <LogOut className="mr-2 h-4 w-4" />
-                  <span>Logout</span>
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          ) : (
-            <div className="flex items-center gap-2">
-              <Button variant="ghost" asChild>
-                  <Link href="/login">Sign In</Link>
-                </Button>
-                <Button asChild>
-                  <Link href="/register">Sign Up</Link>
-                </Button>
-            </div>
-          )}
-        </>
+      {loading ? (
+        <Skeleton className="h-8 w-8 rounded-full" />
+      ) : user ? (
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="secondary" size="icon" className="rounded-full">
+              <CircleUser className="h-5 w-5" />
+              <span className="sr-only">Toggle user menu</span>
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end">
+            <DropdownMenuLabel>{user.displayName || user.email}</DropdownMenuLabel>
+            <DropdownMenuSeparator />
+            {isAdmin && (
+              <DropdownMenuItem asChild>
+                <Link href="/admin">
+                  <Shield className="mr-2 h-4 w-4" />
+                  Admin Dashboard
+                </Link>
+              </DropdownMenuItem>
+            )}
+            <DropdownMenuItem asChild>
+              <Link href="/profile">
+                <CircleUser className="mr-2 h-4 w-4" />
+                Profile
+              </Link>
+            </DropdownMenuItem>
+             <DropdownMenuItem asChild>
+              <Link href="/profile/edit">
+                <FilePenLine className="mr-2 h-4 w-4" />
+                Edit Profile
+              </Link>
+            </DropdownMenuItem>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem onClick={handleLogout}>
+              <LogOut className="mr-2 h-4 w-4" />
+              <span>Logout</span>
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      ) : (
+        <div className="flex items-center gap-2">
+          <Button variant="ghost" asChild>
+              <Link href="/login">Sign In</Link>
+            </Button>
+            <Button asChild>
+              <Link href="/register">Sign Up</Link>
+            </Button>
+        </div>
       )}
     </header>
   );

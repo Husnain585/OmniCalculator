@@ -5,6 +5,9 @@ import { redirect } from 'next/navigation';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Skeleton } from '@/components/ui/skeleton';
+import { Button } from '@/components/ui/button';
+import Link from 'next/link';
+import { FilePenLine } from 'lucide-react';
 
 function getInitials(name: string | null | undefined): string {
   if (!name) return 'U';
@@ -43,7 +46,16 @@ export default function ProfilePage() {
 
   return (
     <div>
-      <h1 className="text-4xl font-bold font-headline mb-8">My Profile</h1>
+      <div className="flex items-center justify-between mb-8">
+        <h1 className="text-4xl font-bold font-headline">My Profile</h1>
+        <Button asChild variant="outline">
+          <Link href="/profile/edit">
+            <FilePenLine className="mr-2 h-4 w-4" />
+            Edit Profile
+          </Link>
+        </Button>
+      </div>
+
       <Card>
         <CardHeader className="flex flex-row items-center gap-6 space-y-0 pb-6">
             <Avatar className="h-20 w-20">

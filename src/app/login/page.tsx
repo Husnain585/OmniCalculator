@@ -53,15 +53,32 @@ export default function LoginPage() {
   const onSubmit: SubmitHandler<LoginFormValues> = async (data) => {
     setLoading(true);
     try {
-      await signInWithEmailAndPassword(auth, data.email, data.password);
-      router.push('/');
+      const userCredential = await signInWithEmailAndPassword(auth, data.email, data.password);
+      const user = userCredential.user;
+
+      // Force refresh of the token to get the latest claims
+      const idTokenResult = await user.getIdTokenResult(true);
+      
+      if (idTokenResult.claims.admin === true) {
+        router.push('/admin');
+      } else {
+        router.push('/');
+      }
       router.refresh();
+
     } catch (error: any) {
       console.error('Login error:', error);
+      let description = 'An unexpected error occurred.';
+      if (error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password' || error.code === 'auth/invalid-credential') {
+        description = 'Invalid email or password. Please try again.';
+      } else if (error.message) {
+        description = error.message;
+      }
+      
       toast({
         variant: 'destructive',
         title: 'Login Failed',
-        description: error.message || 'An unexpected error occurred.',
+        description: description,
       });
     } finally {
       setLoading(false);

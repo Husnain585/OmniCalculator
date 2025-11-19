@@ -23,7 +23,7 @@ async function CategoryCard({
         <CardHeader className="p-4">
           <div className="flex items-center gap-3">
             <CategoryIcon className="h-8 w-8 text-primary" />
-            <CardTitle className="text-xl">{category.name}</CardTitle>
+            <CardTitle className="text-xl font-medium">{category.name}</CardTitle>
           </div>
         </CardHeader>
         <CardContent className="p-4 pt-0">
@@ -51,7 +51,7 @@ export default async function Home() {
                 <Link href="/calculators">Browse Calculators</Link>
             </Button>
              <Button size="lg" variant="outline" asChild>
-                <Link href="/register">Get Started with OmniCalc</Link>
+                <Link href="/register">Get Started</Link>
             </Button>
         </div>
       </section>

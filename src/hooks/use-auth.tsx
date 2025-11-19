@@ -3,6 +3,7 @@
 import { useState, useEffect, createContext, useContext, ReactNode } from 'react';
 import { getAuth, onAuthStateChanged, User } from 'firebase/auth';
 import { app } from '@/lib/firebase';
+import { useRouter } from 'next/navigation';
 
 interface AuthContextType {
   user: User | null;
@@ -32,6 +33,7 @@ function deleteCookie(name: string) {
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
+  const router = useRouter();
 
   useEffect(() => {
     const auth = getAuth(app);
@@ -41,17 +43,33 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       if (user) {
         const token = await user.getIdToken();
         setCookie('idToken', token, 1);
+        
+        // Centralized redirect logic
+        const idTokenResult = await user.getIdTokenResult(true); // Force refresh
+        if (idTokenResult.claims.admin === true) {
+            if (window.location.pathname.startsWith('/admin')) {
+                // Already on an admin page, no need to redirect
+            } else {
+                router.push('/admin');
+            }
+        } else {
+             if (window.location.pathname.startsWith('/admin')) {
+                // Non-admin trying to access admin page, redirect to home
+                router.push('/');
+             }
+        }
+
       } else {
         deleteCookie('idToken');
       }
     });
 
     return () => unsubscribe();
-  }, []);
+  }, [router]);
 
   return (
     <AuthContext.Provider value={{ user, loading }}>
-      {!loading && children}
+      {children}
     </AuthContext.Provider>
   );
 };

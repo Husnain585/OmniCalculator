@@ -5,6 +5,7 @@ import { cn } from '@/lib/utils';
 import { AppContent } from '@/components/layout/app-content';
 import { AuthProvider } from '@/hooks/use-auth';
 import { Inter } from 'next/font/google';
+import { Suspense } from 'react';
 
 const inter = Inter({ subsets: ['latin'], variable: '--font-inter' });
 
@@ -21,9 +22,11 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={cn('font-body antialiased', inter.variable)}>
-        <AuthProvider>
-          <AppContent>{children}</AppContent>
-        </AuthProvider>
+        <Suspense>
+          <AuthProvider>
+            <AppContent>{children}</AppContent>
+          </AuthProvider>
+        </Suspense>
         <Toaster />
       </body>
     </html>

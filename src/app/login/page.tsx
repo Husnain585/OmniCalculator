@@ -53,18 +53,10 @@ export default function LoginPage() {
   const onSubmit: SubmitHandler<LoginFormValues> = async (data) => {
     setLoading(true);
     try {
-      const userCredential = await signInWithEmailAndPassword(auth, data.email, data.password);
-      const user = userCredential.user;
-
-      // Force refresh of the token to get the latest claims. This is crucial.
-      const idTokenResult = await user.getIdTokenResult(true);
-      
-      if (idTokenResult.claims.admin === true) {
-        router.push('/admin');
-      } else {
-        router.push('/');
-      }
-      // This second refresh ensures the entire app state is synced after redirect.
+      await signInWithEmailAndPassword(auth, data.email, data.password);
+      // The redirection logic is now handled in the AuthProvider
+      // We can just refresh the router to trigger the provider's useEffect
+      router.push('/'); // Redirect to home, AuthProvider will handle admin redirect
       router.refresh(); 
 
     } catch (error: any) {

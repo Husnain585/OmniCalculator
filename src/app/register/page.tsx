@@ -84,10 +84,16 @@ export default function RegisterPage() {
 
     } catch (error: any) {
       console.error('Registration error:', error);
+      let errorMessage = error.message || 'Could not create your account.';
+      if (error.code === 'functions/already-exists') {
+          errorMessage = 'This email address is already in use by another account.';
+      } else if (error.code === 'functions/permission-denied') {
+          errorMessage = 'An admin user already exists. Cannot create another.';
+      }
       toast({
         variant: 'destructive',
         title: 'Registration Failed',
-        description: error.message || 'Could not create your account.',
+        description: errorMessage,
       });
     } finally {
       setLoading(false);
@@ -146,7 +152,7 @@ export default function RegisterPage() {
             />
 
             {checkingAdmin ? (
-              <div className="flex items-center space-x-2">Checking admin...</div>
+              <div className="flex items-center space-x-2 h-10">Checking admin status...</div>
             ) : (
               showAdminOption && (
                 <FormField

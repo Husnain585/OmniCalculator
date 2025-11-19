@@ -56,7 +56,7 @@ export default function LoginPage() {
       const userCredential = await signInWithEmailAndPassword(auth, data.email, data.password);
       const user = userCredential.user;
 
-      // Force refresh of the token to get the latest claims
+      // Force refresh of the token to get the latest claims. This is crucial.
       const idTokenResult = await user.getIdTokenResult(true);
       
       if (idTokenResult.claims.admin === true) {
@@ -64,7 +64,8 @@ export default function LoginPage() {
       } else {
         router.push('/');
       }
-      router.refresh();
+      // This second refresh ensures the entire app state is synced after redirect.
+      router.refresh(); 
 
     } catch (error: any) {
       console.error('Login error:', error);

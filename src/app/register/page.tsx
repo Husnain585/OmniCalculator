@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState, useEffect } from 'react';
@@ -6,9 +5,9 @@ import { useRouter } from 'next/navigation';
 import { useForm, SubmitHandler } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
-import { httpsCallable } from 'firebase/functions';
-import { signInWithEmailAndPassword } from 'firebase/auth';
-import { auth, functions } from '@/lib/firebase';
+import { createUserWithEmailAndPassword, updateProfile } from 'firebase/auth';
+import { doc, setDoc, serverTimestamp } from 'firebase/firestore';
+import { auth, db } from '@/lib/firebase';
 import { Button } from '@/components/ui/button';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
@@ -22,7 +21,7 @@ const formSchema = z.object({
   fullName: z.string().min(2, { message: 'Full name is required.' }),
   email: z.string().email({ message: 'Invalid email address.' }),
   password: z.string().min(6, { message: 'Password must be at least 6 characters.' }),
-  setAdmin: z.boolean().default(false),
+  registerAsAdmin: z.boolean().default(false),
 });
 
 type RegisterFormValues = z.infer<typeof formSchema>;
@@ -32,16 +31,26 @@ export default function RegisterPage() {
   const { toast } = useToast();
   const [loading, setLoading] = useState(false);
   const [showAdminOption, setShowAdminOption] = useState(false);
+  const [checkingAdmin, setCheckingAdmin] = useState(true);
 
-  // Check if an admin user already exists to determine if the option should be shown
   useEffect(() => {
-    async function checkAdminExists() {
-        const adminExists = await hasAdminUser();
-        setShowAdminOption(!adminExists);
+    async function checkAdmin() {
+      try {
+        const hasAdmin = await hasAdminUser();
+        setShowAdminOption(!hasAdmin);
+      } catch (error) {
+        console.error("Admin check failed:", error);
+        toast({
+          variant: 'destructive',
+          title: 'Error',
+          description: 'Could not verify admin status.',
+        });
+      } finally {
+        setCheckingAdmin(false);
+      }
     }
-    checkAdminExists();
-  }, []);
-
+    checkAdmin();
+  }, [toast]);
 
   const form = useForm<RegisterFormValues>({
     resolver: zodResolver(formSchema),
@@ -49,36 +58,32 @@ export default function RegisterPage() {
       fullName: '',
       email: '',
       password: '',
-      setAdmin: false,
+      registerAsAdmin: false,
     },
   });
 
   const onSubmit: SubmitHandler<RegisterFormValues> = async (data) => {
     setLoading(true);
     try {
-      const createFirebaseUser = httpsCallable(functions, 'createFirebaseUser');
-      
-      const payload: { [key: string]: any } = {
-        email: data.email,
-        password: data.password,
+      // 1. Create user with Firebase Auth
+      const userCredential = await createUserWithEmailAndPassword(auth, data.email, data.password);
+      const user = userCredential.user;
+
+      // 2. Update display name
+      await updateProfile(user, { displayName: data.fullName });
+
+      // 3. Add user document to Firestore
+      await setDoc(doc(db, 'users', user.uid), {
         fullName: data.fullName,
-      };
+        email: data.email,
+        isAdmin: data.registerAsAdmin,
+        createdAt: serverTimestamp(),
+      });
 
-      if (data.setAdmin) {
-        payload.role = 'admin';
-      }
+      toast({ title: 'Registration Successful', description: `Welcome, ${data.fullName}!` });
 
-      const result = await createFirebaseUser(payload);
-      
-      if (result.data) {
-        await signInWithEmailAndPassword(auth, data.email, data.password);
-        toast({ title: 'Registration Successful', description: `Welcome, ${data.fullName}!` });
-        router.push(payload.role === 'admin' ? '/admin' : '/');
-        router.refresh();
-      } else {
-         throw new Error("User creation failed.");
-      }
-
+      // 4. Redirect user based on role
+      router.push(data.registerAsAdmin ? '/admin' : '/');
     } catch (error: any) {
       console.error('Registration error:', error);
       toast({
@@ -115,7 +120,6 @@ export default function RegisterPage() {
                 </FormItem>
               )}
             />
-
             <FormField
               control={form.control}
               name="email"
@@ -129,7 +133,6 @@ export default function RegisterPage() {
                 </FormItem>
               )}
             />
-
             <FormField
               control={form.control}
               name="password"
@@ -144,23 +147,27 @@ export default function RegisterPage() {
               )}
             />
 
-            {showAdminOption && (
+            {checkingAdmin ? (
+              <div className="flex items-center space-x-2">Checking admin...</div>
+            ) : (
+              showAdminOption && (
                 <FormField
-                control={form.control}
-                name="setAdmin"
-                render={({ field }) => (
+                  control={form.control}
+                  name="registerAsAdmin"
+                  render={({ field }) => (
                     <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4">
-                    <FormControl>
+                      <FormControl>
                         <Checkbox checked={field.value} onCheckedChange={field.onChange} disabled={loading} />
-                    </FormControl>
-                    <div className="space-y-1 leading-none">
+                      </FormControl>
+                      <div className="space-y-1 leading-none">
                         <FormLabel className="flex items-center gap-2">
-                        <ShieldCheck className="h-4 w-4 text-primary" /> Register as Admin
+                          <ShieldCheck className="h-4 w-4 text-primary" /> Register as Admin
                         </FormLabel>
-                    </div>
+                      </div>
                     </FormItem>
-                )}
+                  )}
                 />
+              )
             )}
 
             <Button type="submit" className="w-full" disabled={loading}>

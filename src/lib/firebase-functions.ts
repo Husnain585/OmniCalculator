@@ -1,6 +1,6 @@
+
 import * as functions from 'firebase-functions';
 import * as admin from 'firebase-admin';
-import { doc, setDoc } from 'firebase/firestore';
 import { db } from './firebase-admin';
 
 // Initialize admin only once
@@ -36,6 +36,7 @@ export const createFirebaseUser = functions.https.onCall(async (data, context) =
         'This email address is already in use by another account.'
       );
     }
+    console.error('Error creating Firebase Auth user:', error);
     throw new functions.https.HttpsError(
       'internal',
       'Failed to create user account.'
@@ -44,8 +45,8 @@ export const createFirebaseUser = functions.https.onCall(async (data, context) =
 
   // Create user document in Firestore
   try {
-    const userRef = doc(db, 'users', userRecord.uid);
-    await setDoc(userRef, {
+    const userRef = db.collection('users').doc(userRecord.uid);
+    await userRef.set({
       email: userRecord.email,
       fullName: userRecord.displayName,
       createdAt: admin.firestore.FieldValue.serverTimestamp(),
@@ -68,6 +69,8 @@ export const createFirebaseUser = functions.https.onCall(async (data, context) =
 
     if (hasExistingAdmin) {
        await admin.auth().deleteUser(userRecord.uid);
+       // Also delete the firestore doc
+       await db.collection('users').doc(userRecord.uid).delete();
        throw new functions.https.HttpsError(
         'permission-denied',
         'An admin user already exists. Cannot create another.'
@@ -78,6 +81,7 @@ export const createFirebaseUser = functions.https.onCall(async (data, context) =
       await admin.auth().setCustomUserClaims(userRecord.uid, { admin: true });
     } catch (error) {
       await admin.auth().deleteUser(userRecord.uid);
+      await db.collection('users').doc(userRecord.uid).delete();
       console.error('Error setting custom claims:', error);
       throw new functions.https.HttpsError(
         'internal',

@@ -1,8 +1,7 @@
+
 'use server';
 
 import { revalidatePath } from 'next/cache';
-import { getAuth } from 'firebase-admin/auth';
-import { doc, setDoc } from 'firebase/firestore';
 import { adminAuth, db } from '@/lib/firebase-admin';
 
 export async function updateUserProfile(uid: string, fullName: string) {
@@ -17,8 +16,8 @@ export async function updateUserProfile(uid: string, fullName: string) {
     });
 
     // Update Firestore user document
-    const userRef = doc(db, 'users', uid);
-    await setDoc(userRef, { fullName: fullName }, { merge: true });
+    const userRef = db.collection('users').doc(uid);
+    await userRef.set({ fullName: fullName }, { merge: true });
 
     // Revalidate paths to reflect changes immediately
     revalidatePath('/profile');

@@ -7,7 +7,9 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
-import { FilePenLine } from 'lucide-react';
+import { FilePenLine, Shield } from 'lucide-react';
+import { useEffect, useState } from 'react';
+import { Badge } from '@/components/ui/badge';
 
 function getInitials(name: string | null | undefined): string {
   if (!name) return 'U';
@@ -18,8 +20,30 @@ function getInitials(name: string | null | undefined): string {
 
 export default function ProfilePage() {
   const { user, loading } = useAuth();
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [checkingAdmin, setCheckingAdmin] = useState(true);
 
-  if (loading) {
+  useEffect(() => {
+    async function checkAdminStatus() {
+      if (user) {
+        setCheckingAdmin(true);
+        try {
+          const idTokenResult = await user.getIdTokenResult(true);
+          setIsAdmin(!!idTokenResult.claims.admin);
+        } catch (error) {
+          console.error("Error fetching token result:", error);
+          setIsAdmin(false);
+        } finally {
+          setCheckingAdmin(false);
+        }
+      } else if (!loading) {
+        setCheckingAdmin(false);
+      }
+    }
+    checkAdminStatus();
+  }, [user, loading]);
+
+  if (loading || checkingAdmin) {
     return (
         <div>
             <h1 className="text-4xl font-bold font-headline mb-8">My Profile</h1>
@@ -32,6 +56,7 @@ export default function ProfilePage() {
                     </div>
                 </CardHeader>
                 <CardContent className="space-y-4">
+                    <Skeleton className="h-8 w-full" />
                     <Skeleton className="h-8 w-full" />
                     <Skeleton className="h-8 w-full" />
                 </CardContent>
@@ -73,6 +98,14 @@ export default function ProfilePage() {
             </div>
         </CardHeader>
         <CardContent className="space-y-4">
+            <div className="grid gap-2">
+                <div className="font-semibold">Role</div>
+                {isAdmin ? (
+                  <Badge className="w-fit"><Shield className="mr-2 h-4 w-4" />Admin</Badge>
+                ) : (
+                  <Badge variant="secondary" className="w-fit">User</Badge>
+                )}
+            </div>
             <div className="grid gap-2">
                 <div className="font-semibold">User ID</div>
                 <p className="text-muted-foreground font-mono text-sm">{user.uid}</p>

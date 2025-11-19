@@ -73,6 +73,7 @@ export interface Calculator {
   description: string;
   component: ComponentType;
   icon: LucideIcon;
+  categorySlug?: string;
 }
 
 export interface CalculatorCategory {
@@ -335,5 +336,9 @@ export const calculatorCategories: CalculatorCategory[] = [
 ];
 
 export const allCalculators: Calculator[] = calculatorCategories.flatMap(
-  (category) => category.calculators
+  (category) =>
+    category.calculators.map((calc) => ({
+      ...calc,
+      categorySlug: category.slug,
+    }))
 );

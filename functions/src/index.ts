@@ -1,12 +1,12 @@
 
 import * as functions from 'firebase-functions';
 import * as admin from 'firebase-admin';
-import { db } from './firebase-admin';
 
 // Initialize admin only once
 if (admin.apps.length === 0) {
   admin.initializeApp();
 }
+const db = admin.firestore();
 
 /**
  * A callable Cloud Function to create a new Firebase user.

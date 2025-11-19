@@ -1,12 +1,12 @@
 
 "use client";
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useForm, SubmitHandler } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
-import { getFunctions, httpsCallable } from 'firebase/functions';
+import { httpsCallable } from 'firebase/functions';
 import { signInWithEmailAndPassword } from 'firebase/auth';
 import { auth, functions } from '@/lib/firebase';
 import { Button } from '@/components/ui/button';
@@ -34,13 +34,13 @@ export default function RegisterPage() {
   const [showAdminOption, setShowAdminOption] = useState(false);
 
   // Check if an admin user already exists to determine if the option should be shown
-  useState(() => {
+  useEffect(() => {
     async function checkAdminExists() {
         const adminExists = await hasAdminUser();
         setShowAdminOption(!adminExists);
     }
     checkAdminExists();
-  });
+  }, []);
 
 
   const form = useForm<RegisterFormValues>({

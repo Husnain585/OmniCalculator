@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import { useForm, SubmitHandler } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
-import { getAuth, createUserWithEmailAndPassword } from 'firebase/auth';
+import { getAuth, signInWithEmailAndPassword } from 'firebase/auth';
 import { getFunctions, httpsCallable } from 'firebase/functions';
 import { app } from '@/lib/firebase';
 import { Button } from '@/components/ui/button';
@@ -73,15 +73,15 @@ export default function RegisterPage() {
   const onSubmit: SubmitHandler<RegisterFormValues> = async (data) => {
     setLoading(true);
     try {
-      const userCredential = await createUserWithEmailAndPassword(auth, data.email, data.password);
-      const user = userCredential.user;
+      const createFirebaseUser = httpsCallable(functions, 'createFirebaseUser');
+      await createFirebaseUser({
+        email: data.email,
+        password: data.password,
+        setAdmin: data.registerAsAdmin,
+      });
 
-      if (data.registerAsAdmin) {
-        const setAdminClaim = httpsCallable(functions, 'setAdminClaim');
-        await setAdminClaim({ uid: user.uid });
-        // The token needs to be refreshed to get the new custom claim
-        await user.getIdToken(true);
-      }
+      // After successful creation, log the user in
+      await signInWithEmailAndPassword(auth, data.email, data.password);
       
       router.push('/');
       router.refresh();
@@ -90,7 +90,7 @@ export default function RegisterPage() {
       toast({
         variant: 'destructive',
         title: 'Registration Failed',
-        description: error.message || 'An unexpected error occurred.',
+        description: error.message || 'An unexpected error occurred. The email may already be in use.',
       });
     } finally {
       setLoading(false);

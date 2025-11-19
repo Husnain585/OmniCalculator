@@ -15,7 +15,6 @@ import Link from 'next/link';
 import { Calculator, ShieldCheck } from 'lucide-react';
 import { Checkbox } from '@/components/ui/checkbox';
 import { hasAdminUser } from '@/lib/auth-actions';
-import { getAuth, signInWithEmailAndPassword } from 'firebase/auth';
 
 const formSchema = z.object({
   fullName: z.string().min(2, { message: 'Full name is required.' }),

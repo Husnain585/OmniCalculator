@@ -53,11 +53,21 @@ export default function LoginPage() {
   const onSubmit: SubmitHandler<LoginFormValues> = async (data) => {
     setLoading(true);
     try {
-      // The AuthProvider will handle the redirect after this completes.
-      await signInWithEmailAndPassword(auth, data.email, data.password);
-      // We no longer need to manually redirect here. We just need to trigger a re-render.
-      // The router.push('/') will be handled by the AuthProvider's logic.
+      const userCredential = await signInWithEmailAndPassword(auth, data.email, data.password);
+      
+      // Force a refresh of the ID token to get the latest custom claims.
+      const idTokenResult = await userCredential.user.getIdTokenResult(true);
+
+      // The AuthProvider will handle the redirect, but we can give it a hint.
+      if (idTokenResult.claims.admin === true) {
+        router.push('/admin');
+      } else {
+        router.push('/');
+      }
+      
+      // This ensures the AppHeader and other components re-render with the new user state.
       router.refresh();
+
     } catch (error: any) {
       console.error('Login error:', error);
       let description = 'An unexpected error occurred.';

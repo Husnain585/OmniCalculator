@@ -5,9 +5,8 @@ import { useRouter } from 'next/navigation';
 import { useForm, SubmitHandler } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
-import { createUserWithEmailAndPassword, updateProfile } from 'firebase/auth';
-import { doc, setDoc, serverTimestamp } from 'firebase/firestore';
-import { auth, db } from '@/lib/firebase';
+import { getFunctions, httpsCallable } from 'firebase/functions';
+import { app } from '@/lib/firebase';
 import { Button } from '@/components/ui/button';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
@@ -64,26 +63,25 @@ export default function RegisterPage() {
 
   const onSubmit: SubmitHandler<RegisterFormValues> = async (data) => {
     setLoading(true);
+    const functions = getFunctions(app);
+    const createFirebaseUser = httpsCallable(functions, 'createFirebaseUser');
+
     try {
-      // 1. Create user with Firebase Auth
-      const userCredential = await createUserWithEmailAndPassword(auth, data.email, data.password);
-      const user = userCredential.user;
-
-      // 2. Update display name
-      await updateProfile(user, { displayName: data.fullName });
-
-      // 3. Add user document to Firestore
-      await setDoc(doc(db, 'users', user.uid), {
-        fullName: data.fullName,
+      const role = data.registerAsAdmin ? 'admin' : 'user';
+      await createFirebaseUser({
         email: data.email,
-        isAdmin: data.registerAsAdmin,
-        createdAt: serverTimestamp(),
+        password: data.password,
+        fullName: data.fullName,
+        role: role,
       });
 
       toast({ title: 'Registration Successful', description: `Welcome, ${data.fullName}!` });
+      
+      // Since the function handles creation, we just need to log the user in now.
+      // Firebase doesn't automatically sign in users created via the Admin SDK.
+      // So we will redirect them to the login page to sign in with their new credentials.
+      router.push('/login');
 
-      // 4. Redirect user based on role
-      router.push(data.registerAsAdmin ? '/admin' : '/');
     } catch (error: any) {
       console.error('Registration error:', error);
       toast({

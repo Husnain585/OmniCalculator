@@ -3,8 +3,7 @@ import { headers } from 'next/headers';
 import { redirect } from 'next/navigation';
 import admin from '@/lib/firebase-admin';
 import Link from 'next/link';
-import { Home, Users, Settings, Calculator } from 'lucide-react';
-import { Button } from '@/components/ui/button';
+import { Users, Settings, Calculator } from 'lucide-react';
 
 async function verifyAdmin(idToken: string) {
   try {

@@ -5,22 +5,24 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
-import { calculatorCategories } from '@/lib/calculators';
+import { getCalculatorCategories } from '@/lib/calculators-db';
 import { ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import AiSuggestions from '@/components/ai-suggestions';
+import { calculatorIcons } from '@/lib/calculator-icons';
 
-function CategoryCard({
+async function CategoryCard({
   category,
 }: {
-  category: (typeof calculatorCategories)[0];
+  category: Awaited<ReturnType<typeof getCalculatorCategories>>[0];
 }) {
+  const CategoryIcon = calculatorIcons[category.icon] || calculatorIcons['default'];
   return (
     <Link href={`/calculators/${category.slug}`}>
       <Card className="group h-full overflow-hidden transition-all hover:shadow-lg hover:-translate-y-1">
         <CardHeader className="p-4">
           <div className="flex items-center gap-3">
-            <category.icon className="h-8 w-8 text-primary" />
+            <CategoryIcon className="h-8 w-8 text-primary" />
             <CardTitle className="text-xl">{category.name}</CardTitle>
           </div>
         </CardHeader>
@@ -32,7 +34,9 @@ function CategoryCard({
   );
 }
 
-export default function Home() {
+export default async function Home() {
+  const calculatorCategories = await getCalculatorCategories();
+  
   return (
     <div className="space-y-16">
       <section className="text-center">

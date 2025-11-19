@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
-import { calculatorCategories, allCalculators } from '@/lib/calculators';
+import { getCalculatorCategories, allCalculators as getAllCalculators, getCalculatorComponents } from '@/lib/calculators-db';
 import {
   Card,
   CardContent,
@@ -17,13 +17,17 @@ import {
   BreadcrumbSeparator,
 } from '@/components/ui/breadcrumb';
 import { ArrowRight } from 'lucide-react';
+import { calculatorIcons } from '@/lib/calculator-icons';
 
-export default function CalculatorPage({
+export default async function CalculatorPage({
   params,
 }: {
   params: { slug: string[] };
 }) {
   const { slug } = params;
+  const calculatorCategories = await getCalculatorCategories();
+  const allCalculators = await getAllCalculators();
+  const calculatorComponents = getCalculatorComponents();
 
   if (!slug || slug.length === 0) {
     return (
@@ -43,38 +47,44 @@ export default function CalculatorPage({
           All Calculators
         </h1>
         <div className="space-y-10">
-          {calculatorCategories.map((category) => (
-            <div key={category.slug}>
-              <h2 className="text-2xl font-bold font-headline mb-4">
-                {category.name}
-              </h2>
-              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-                {category.calculators.map((calc) => (
-                  <Link
-                    key={calc.slug}
-                    href={`/calculators/${category.slug}/${calc.slug}`}
-                  >
-                    <Card className="group h-full transition-all hover:bg-accent hover:text-accent-foreground">
-                      <CardHeader>
-                        <CardTitle className="flex items-center gap-3">
-                          <calc.icon className="h-6 w-6 text-primary group-hover:text-accent-foreground" />
-                          {calc.name}
-                        </CardTitle>
-                      </CardHeader>
-                      <CardContent>
-                        <p>{calc.description}</p>
-                      </CardContent>
-                    </Card>
-                  </Link>
-                ))}
-                {category.calculators.length === 0 && (
-                  <p className="text-muted-foreground col-span-full">
-                    More calculators coming soon.
-                  </p>
-                )}
+          {calculatorCategories.map((category) => {
+            const CategoryIcon = calculatorIcons[category.icon] || calculatorIcons['default'];
+            return (
+              <div key={category.slug}>
+                <h2 className="text-2xl font-bold font-headline mb-4">
+                  {category.name}
+                </h2>
+                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                  {category.calculators.map((calc) => {
+                    const CalcIcon = calculatorIcons[calc.icon] || calculatorIcons['default'];
+                    return (
+                      <Link
+                        key={calc.slug}
+                        href={`/calculators/${category.slug}/${calc.slug}`}
+                      >
+                        <Card className="group h-full transition-all hover:bg-accent hover:text-accent-foreground">
+                          <CardHeader>
+                            <CardTitle className="flex items-center gap-3">
+                              <CalcIcon className="h-6 w-6 text-primary group-hover:text-accent-foreground" />
+                              {calc.name}
+                            </CardTitle>
+                          </CardHeader>
+                          <CardContent>
+                            <p>{calc.description}</p>
+                          </CardContent>
+                        </Card>
+                      </Link>
+                    )
+                  })}
+                  {category.calculators.length === 0 && (
+                    <p className="text-muted-foreground col-span-full">
+                      More calculators coming soon.
+                    </p>
+                  )}
+                </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       </div>
     );
@@ -84,6 +94,7 @@ export default function CalculatorPage({
   if (slug.length === 1) {
     const category = calculatorCategories.find((cat) => cat.slug === slug[0]);
     if (!category) notFound();
+    const CategoryIcon = calculatorIcons[category.icon] || calculatorIcons['default'];
 
     return (
       <div>
@@ -103,7 +114,7 @@ export default function CalculatorPage({
           </BreadcrumbList>
         </Breadcrumb>
         <div className="mb-8 text-center">
-            <category.icon className="h-12 w-12 text-primary mb-4 inline-block" />
+            <CategoryIcon className="h-12 w-12 text-primary mb-4 inline-block" />
             <h1 className="text-4xl font-bold text-foreground font-headline">
               {category.name}
             </h1>
@@ -113,28 +124,31 @@ export default function CalculatorPage({
         </div>
 
         <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
-          {category.calculators.map((calc) => (
-            <Link
-              key={calc.slug}
-              href={`/calculators/${category.slug}/${calc.slug}`}
-            >
-              <Card className="group flex flex-col justify-between h-full transition-shadow hover:shadow-xl hover:bg-accent hover:text-accent-foreground">
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-3">
-                    <calc.icon className="h-6 w-6 text-primary group-hover:text-accent-foreground" />
-                    <span>{calc.name}</span>
-                  </CardTitle>
-                  <CardDescription className="group-hover:text-accent-foreground/80">{calc.description}</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <div className="text-sm font-semibold text-primary flex items-center group-hover:text-accent-foreground">
-                    Calculate Now{' '}
-                    <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
-                  </div>
-                </CardContent>
-              </Card>
-            </Link>
-          ))}
+          {category.calculators.map((calc) => {
+             const CalcIcon = calculatorIcons[calc.icon] || calculatorIcons['default'];
+            return (
+              <Link
+                key={calc.slug}
+                href={`/calculators/${category.slug}/${calc.slug}`}
+              >
+                <Card className="group flex flex-col justify-between h-full transition-shadow hover:shadow-xl hover:bg-accent hover:text-accent-foreground">
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-3">
+                      <CalcIcon className="h-6 w-6 text-primary group-hover:text-accent-foreground" />
+                      <span>{calc.name}</span>
+                    </CardTitle>
+                    <CardDescription className="group-hover:text-accent-foreground/80">{calc.description}</CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="text-sm font-semibold text-primary flex items-center group-hover:text-accent-foreground">
+                      Calculate Now{' '}
+                      <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
+                    </div>
+                  </CardContent>
+                </Card>
+              </Link>
+            )
+          })}
           {category.calculators.length === 0 && (
             <Card className="md:col-span-2 lg:col-span-3">
               <CardContent className="p-10 text-center">
@@ -154,10 +168,18 @@ export default function CalculatorPage({
   if (slug.length === 2) {
     const category = calculatorCategories.find((cat) => cat.slug === slug[0]);
     const calculator = allCalculators.find((calc) => calc.slug === slug[1]);
-    if (!calculator || !category || !category.calculators.includes(calculator))
-      notFound();
+    
+    if (!calculator || !category || calculator.categorySlug !== category.slug) {
+        notFound();
+    }
 
-    const CalculatorComponent = calculator.component;
+    const CalculatorComponent = calculatorComponents[calculator.component as keyof typeof calculatorComponents];
+
+    if (!CalculatorComponent) {
+        console.error(`Component ${calculator.component} not found`);
+        notFound();
+    }
+
 
     return (
       <div>

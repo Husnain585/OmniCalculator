@@ -1,4 +1,7 @@
-import type { LucideIcon } from 'lucide-react';
+// This file is now deprecated and will be removed in a future update.
+// All calculator data is now fetched from Firestore.
+// Please use functions from `lib/calculators-db.ts` instead.
+
 import {
   PiggyBank,
   HeartPulse,
@@ -35,7 +38,6 @@ import {
   KeyRound,
   HandCoins,
   Table,
-  Inflation,
   CarFront,
 } from 'lucide-react';
 import BmiCalculator from '@/components/calculators/bmi-calculator';
@@ -66,6 +68,7 @@ import AmortizationCalculator from '@/components/calculators/amortization-calcul
 import InflationCalculator from '@/components/calculators/inflation-calculator';
 import AutoLoanCalculator from '@/components/calculators/auto-loan-calculator';
 import type { ComponentType } from 'react';
+import type { LucideIcon } from 'lucide-react';
 
 export interface Calculator {
   name: string;
@@ -84,261 +87,42 @@ export interface CalculatorCategory {
   calculators: Calculator[];
 }
 
-export const calculatorCategories: CalculatorCategory[] = [
-  {
-    name: 'Finance',
-    slug: 'finance',
-    description: 'Calculators for loans, investments, and savings.',
-    icon: PiggyBank,
-    calculators: [
-      {
-        name: 'Simple Interest',
-        slug: 'simple-interest',
-        description: 'Calculate simple interest on a loan or investment.',
-        component: SimpleInterestCalculator,
-        icon: CalculatorIcon,
-      },
-      {
-        name: 'Mortgage Calculator',
-        slug: 'mortgage-calculator',
-        description: 'Estimate your monthly mortgage payments.',
-        component: MortgageCalculator,
-        icon: Home,
-      },
-      {
-        name: 'Loan Calculator',
-        slug: 'loan-calculator',
-        description: 'Calculate payments for any type of loan.',
-        component: LoanCalculator,
-        icon: Landmark,
-      },
-      {
-        name: 'Auto Loan Calculator',
-        slug: 'auto-loan-calculator',
-        description: 'Estimate payments for your new car.',
-        component: AutoLoanCalculator,
-        icon: CarFront,
-      },
-      {
-        name: 'Amortization Calculator',
-        slug: 'amortization-calculator',
-        description: 'View a detailed loan amortization schedule.',
-        component: AmortizationCalculator,
-        icon: Table,
-      },
-      {
-        name: 'Investment Calculator',
-        slug: 'investment-calculator',
-        description: 'Project the growth of your investments over time.',
-        component: InvestmentCalculator,
-        icon: Briefcase,
-      },
-      {
-        name: 'Retirement Calculator',
-        slug: 'retirement-calculator',
-        description: 'Plan and estimate your retirement savings.',
-        component: RetirementCalculator,
-        icon: CalendarClock,
-      },
-      {
-        name: 'Inflation Calculator',
-        slug: 'inflation-calculator',
-        description: 'See how inflation affects your purchasing power.',
-        component: InflationCalculator,
-        icon: TrendingUp,
-      },
-      {
-        name: 'USD to PKR Converter',
-        slug: 'usd-to-pkr-converter',
-        description: 'Convert US Dollars to Pakistani Rupees.',
-        component: CurrencyConverter,
-        icon: ArrowRightLeft,
-      },
-      {
-        name: 'Sales Tax Calculator',
-        slug: 'sales-tax-calculator',
-        description: 'Quickly calculate sales tax and total price.',
-        component: SalesTaxCalculator,
-        icon: Receipt,
-      },
-    ],
-  },
-  {
-    name: 'Health',
-    slug: 'health',
-    description: 'Monitor your health and wellness with these tools.',
-    icon: HeartPulse,
-    calculators: [
-      {
-        name: 'BMI Calculator',
-        slug: 'bmi-calculator',
-        description: 'Calculate your Body Mass Index.',
-        component: BmiCalculator,
-        icon: CalculatorIcon,
-      },
-      {
-        name: 'Period & Ovulation',
-        slug: 'period-calculator',
-        description: 'Estimate your next period and fertile window.',
-        component: PeriodCalculator,
-        icon: Droplets,
-      },
-      {
-        name: 'Calorie Calculator',
-        slug: 'calorie-calculator',
-        description:
-          'Estimate your daily calorie needs for maintenance or weight loss.',
-        component: CalorieCalculator,
-        icon: Flame,
-      },
-      {
-        name: 'Due Date Calculator',
-        slug: 'due-date-calculator',
-        description: 'Estimate your pregnancy due date.',
-        component: DueDateCalculator,
-        icon: Baby,
-      },
-      {
-        name: 'Body Fat Calculator',
-        slug: 'body-fat-calculator',
-        description:
-          'Estimate your body fat percentage using the U.S. Navy method.',
-        component: BodyFatCalculator,
-        icon: PersonStanding,
-      },
-      {
-        name: 'BMR Calculator',
-        slug: 'bmr-calculator',
-        description: 'Calculate your Basal Metabolic Rate (BMR).',
-        component: BmrCalculator,
-        icon: Minus,
-      },
-      {
-        name: 'Ideal Weight Calculator',
-        slug: 'ideal-weight-calculator',
-        description: 'Find your ideal weight based on height and gender.',
-        component: IdealWeightCalculator,
-        icon: Dumbbell,
-      },
-    ],
-  },
-  {
-    name: 'Math',
-    slug: 'math',
-    description: 'Solve mathematical problems from basic to advanced.',
-    icon: Sigma,
-    calculators: [
-      {
-        name: 'Percentage Calculator',
-        slug: 'percentage-calculator',
-        description: 'Calculate percentages for various scenarios.',
-        component: PercentageCalculator,
-        icon: Percent,
-      },
-      {
-        name: 'Fraction Calculator',
-        slug: 'fraction-calculator',
-        description: 'Add, subtract, multiply, and divide fractions.',
-        component: FractionCalculator,
-        icon: Divide,
-      },
-      {
-        name: 'Scientific Calculator',
-        slug: 'scientific-calculator',
-        description:
-          'A powerful calculator for scientific and engineering calculations.',
-        component: ScientificCalculator,
-        icon: FlaskConical,
-      },
-      {
-        name: 'Random Number Generator',
-        slug: 'random-number-generator',
-        description: 'Generate a random number within a specified range.',
-        component: RandomNumberGenerator,
-        icon: Shuffle,
-      },
-      {
-        name: 'GCD Calculator',
-        slug: 'gcd-calculator',
-        description: 'Find the Greatest Common Divisor of two integers.',
-        component: GcdCalculator,
-        icon: GitCommit,
-      },
-    ],
-  },
-  {
-    name: 'Fitness',
-    slug: 'fitness',
-    description: 'Track your fitness goals and progress.',
-    icon: Dumbbell,
-    calculators: [
-      {
-        name: 'Pace Calculator',
-        slug: 'pace-calculator',
-        description: 'Calculate your running pace, time, or distance.',
-        component: PaceCalculator,
-        icon: Footprints,
-      },
-    ],
-  },
-  {
-    name: 'Construction',
-    slug: 'construction',
-    description: 'Calculators for building and construction projects.',
-    icon: HardHat,
-    calculators: [
-      {
-        name: 'Concrete Calculator',
-        slug: 'concrete-calculator',
-        description: 'Estimate the volume of concrete needed for a project.',
-        component: ConcreteCalculator,
-        icon: Building,
-      },
-    ],
-  },
-  {
-    name: 'Utilities',
-    slug: 'utilities',
-    description: 'Handy tools for various everyday tasks.',
-    icon: Wrench,
-    calculators: [
-      {
-        name: 'Password Generator',
-        slug: 'password-generator',
-        description: 'Create strong, random passwords to enhance your security.',
-        component: PasswordGenerator,
-        icon: KeyRound,
-      },
-      {
-        name: 'Tip Calculator',
-        slug: 'tip-calculator',
-        description: 'Calculate tips and split the bill between friends.',
-        component: TipCalculator,
-        icon: HandCoins,
-      },
-    ],
-  },
-  {
-    name: 'Other',
-    slug: 'other',
-    description: 'A collection of other useful calculators.',
-    icon: FunctionSquare,
-    calculators: [
-      {
-        name: 'Date of Birth',
-        slug: 'dob-calculator',
-        description: 'Calculate your age and see details about your birthday.',
-        component: DobCalculator,
-        icon: Cake,
-      },
-    ],
-  },
+export const initialCalculatorData: Omit<CalculatorCategory, 'calculators'>[] = [
+    { name: 'Finance', slug: 'finance', description: 'Calculators for loans, investments, and savings.', icon: PiggyBank },
+    { name: 'Health', slug: 'health', description: 'Monitor your health and wellness with these tools.', icon: HeartPulse },
+    { name: 'Math', slug: 'math', description: 'Solve mathematical problems from basic to advanced.', icon: Sigma },
+    { name: 'Fitness', slug: 'fitness', description: 'Track your fitness goals and progress.', icon: Dumbbell },
+    { name: 'Construction', slug: 'construction', description: 'Calculators for building and construction projects.', icon: HardHat },
+    { name: 'Utilities', slug: 'utilities', description: 'Handy tools for various everyday tasks.', icon: Wrench },
+    { name: 'Other', slug: 'other', description: 'A collection of other useful calculators.', icon: FunctionSquare },
 ];
 
-export const allCalculators: Calculator[] = calculatorCategories.flatMap(
-  (category) =>
-    category.calculators.map((calc) => ({
-      ...calc,
-      categorySlug: category.slug,
-    }))
-);
+export const initialCalculators: Omit<Calculator, 'component' | 'icon'>[] = [
+  { name: 'Simple Interest', slug: 'simple-interest', description: 'Calculate simple interest on a loan or investment.', categorySlug: 'finance', componentName: 'SimpleInterestCalculator', iconName: 'CalculatorIcon' },
+  { name: 'Mortgage Calculator', slug: 'mortgage-calculator', description: 'Estimate your monthly mortgage payments.', categorySlug: 'finance', componentName: 'MortgageCalculator', iconName: 'Home' },
+  { name: 'Loan Calculator', slug: 'loan-calculator', description: 'Calculate payments for any type of loan.', categorySlug: 'finance', componentName: 'LoanCalculator', iconName: 'Landmark' },
+  { name: 'Auto Loan Calculator', slug: 'auto-loan-calculator', description: 'Estimate payments for your new car.', categorySlug: 'finance', componentName: 'AutoLoanCalculator', iconName: 'CarFront' },
+  { name: 'Amortization Calculator', slug: 'amortization-calculator', description: 'View a detailed loan amortization schedule.', categorySlug: 'finance', componentName: 'AmortizationCalculator', iconName: 'Table' },
+  { name: 'Investment Calculator', slug: 'investment-calculator', description: 'Project the growth of your investments over time.', categorySlug: 'finance', componentName: 'InvestmentCalculator', iconName: 'Briefcase' },
+  { name: 'Retirement Calculator', slug: 'retirement-calculator', description: 'Plan and estimate your retirement savings.', categorySlug: 'finance', componentName: 'RetirementCalculator', iconName: 'CalendarClock' },
+  { name: 'Inflation Calculator', slug: 'inflation-calculator', description: 'See how inflation affects your purchasing power.', categorySlug: 'finance', componentName: 'InflationCalculator', iconName: 'TrendingUp' },
+  { name: 'USD to PKR Converter', slug: 'usd-to-pkr-converter', description: 'Convert US Dollars to Pakistani Rupees.', categorySlug: 'finance', componentName: 'CurrencyConverter', iconName: 'ArrowRightLeft' },
+  { name: 'Sales Tax Calculator', slug: 'sales-tax-calculator', description: 'Quickly calculate sales tax and total price.', categorySlug: 'finance', componentName: 'SalesTaxCalculator', iconName: 'Receipt' },
+  { name: 'BMI Calculator', slug: 'bmi-calculator', description: 'Calculate your Body Mass Index.', categorySlug: 'health', componentName: 'BmiCalculator', iconName: 'CalculatorIcon' },
+  { name: 'Period & Ovulation', slug: 'period-calculator', description: 'Estimate your next period and fertile window.', categorySlug: 'health', componentName: 'PeriodCalculator', iconName: 'Droplets' },
+  { name: 'Calorie Calculator', slug: 'calorie-calculator', description: 'Estimate your daily calorie needs for maintenance or weight loss.', categorySlug: 'health', componentName: 'CalorieCalculator', iconName: 'Flame' },
+  { name: 'Due Date Calculator', slug: 'due-date-calculator', description: 'Estimate your pregnancy due date.', categorySlug: 'health', componentName: 'DueDateCalculator', iconName: 'Baby' },
+  { name: 'Body Fat Calculator', slug: 'body-fat-calculator', description: 'Estimate your body fat percentage using the U.S. Navy method.', categorySlug: 'health', componentName: 'BodyFatCalculator', iconName: 'PersonStanding' },
+  { name: 'BMR Calculator', slug: 'bmr-calculator', description: 'Calculate your Basal Metabolic Rate (BMR).', categorySlug: 'health', componentName: 'BmrCalculator', iconName: 'Minus' },
+  { name: 'Ideal Weight Calculator', slug: 'ideal-weight-calculator', description: 'Find your ideal weight based on height and gender.', categorySlug: 'health', componentName: 'IdealWeightCalculator', iconName: 'Dumbbell' },
+  { name: 'Percentage Calculator', slug: 'percentage-calculator', description: 'Calculate percentages for various scenarios.', categorySlug: 'math', componentName: 'PercentageCalculator', iconName: 'Percent' },
+  { name: 'Fraction Calculator', slug: 'fraction-calculator', description: 'Add, subtract, multiply, and divide fractions.', categorySlug: 'math', componentName: 'FractionCalculator', iconName: 'Divide' },
+  { name: 'Scientific Calculator', slug: 'scientific-calculator', description: 'A powerful calculator for scientific and engineering calculations.', categorySlug: 'math', componentName: 'ScientificCalculator', iconName: 'FlaskConical' },
+  { name: 'Random Number Generator', slug: 'random-number-generator', description: 'Generate a random number within a specified range.', categorySlug: 'math', componentName: 'RandomNumberGenerator', iconName: 'Shuffle' },
+  { name: 'GCD Calculator', slug: 'gcd-calculator', description: 'Find the Greatest Common Divisor of two integers.', categorySlug: 'math', componentName: 'GcdCalculator', iconName: 'GitCommit' },
+  { name: 'Pace Calculator', slug: 'pace-calculator', description: 'Calculate your running pace, time, or distance.', categorySlug: 'fitness', componentName: 'PaceCalculator', iconName: 'Footprints' },
+  { name: 'Concrete Calculator', slug: 'concrete-calculator', description: 'Estimate the volume of concrete needed for a project.', categorySlug: 'construction', componentName: 'ConcreteCalculator', iconName: 'Building' },
+  { name: 'Password Generator', slug: 'password-generator', description: 'Create strong, random passwords to enhance your security.', categorySlug: 'utilities', componentName: 'PasswordGenerator', iconName: 'KeyRound' },
+  { name: 'Tip Calculator', slug: 'tip-calculator', description: 'Calculate tips and split the bill between friends.', categorySlug: 'utilities', componentName: 'TipCalculator', iconName: 'HandCoins' },
+  { name: 'Date of Birth', slug: 'dob-calculator', description: 'Calculate your age and see details about your birthday.', categorySlug: 'other', componentName: 'DobCalculator', iconName: 'Cake' },
+];

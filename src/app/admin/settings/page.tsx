@@ -13,11 +13,13 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { allCalculators } from '@/lib/calculators';
+import { allCalculators } from '@/lib/calculators-db';
 import { Button } from '@/components/ui/button';
 import { PlusCircle } from 'lucide-react';
 
-export default function AdminSettingsPage() {
+export default async function AdminSettingsPage() {
+  const calculators = await allCalculators();
+  
   return (
     <div className="space-y-8">
       <h1 className="text-4xl font-bold font-headline">Admin Settings</h1>
@@ -28,7 +30,7 @@ export default function AdminSettingsPage() {
             <div>
               <CardTitle>Calculator Management</CardTitle>
               <CardDescription>
-                View all calculators currently available in the application.
+                View all calculators currently available in the application from Firestore.
               </CardDescription>
             </div>
             <Button disabled> {/* Disabled as functionality is not implemented */}
@@ -47,20 +49,11 @@ export default function AdminSettingsPage() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {allCalculators.map((calc) => (
+              {calculators.map((calc) => (
                 <TableRow key={calc.slug}>
                   <TableCell className="font-medium">{calc.name}</TableCell>
                   <TableCell>
-                    {
-                      // Find category name from slug
-                      (
-                        Object.values(allCalculators).find(c => c.slug === calc.slug) &&
-                        (
-                          (allCalculators.find(c => c.slug === calc.slug) as any)
-                            .categorySlug || 'N/A'
-                        )
-                      ) || 'Unknown'
-                    }
+                    {calc.categorySlug || 'N/A'}
                   </TableCell>
                   <TableCell className="font-mono text-xs">
                     {calc.slug}

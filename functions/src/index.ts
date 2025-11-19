@@ -43,7 +43,37 @@ export const createFirebaseUser = functions.https.onCall(async (data, context) =
     );
   }
 
-  // Create user document in Firestore
+  // If the request is to create an admin, perform checks.
+  if (role === 'admin') {
+    // Check if any other user already has an admin claim.
+    const listUsersResult = await admin.auth().listUsers(1000);
+    const hasExistingAdmin = listUsersResult.users.some(user => user.uid !== userRecord.uid && user.customClaims?.admin === true);
+    
+    if (hasExistingAdmin) {
+       // If an admin already exists, we must not proceed.
+       // Delete the newly created user to prevent orphaned accounts.
+       await admin.auth().deleteUser(userRecord.uid);
+       throw new functions.https.HttpsError(
+        'permission-denied',
+        'An admin user already exists. Cannot create another.'
+      );
+    }
+    
+    // If no other admin exists, set the custom claim for the new user.
+    try {
+      await admin.auth().setCustomUserClaims(userRecord.uid, { admin: true });
+    } catch (error) {
+      // If setting the claim fails, delete the user and Firestore doc to clean up.
+      await admin.auth().deleteUser(userRecord.uid);
+      console.error('Error setting custom claims:', error);
+      throw new functions.https.HttpsError(
+        'internal',
+        'An error occurred while setting the admin role.'
+      );
+    }
+  }
+
+  // Create user document in Firestore regardless of role.
   try {
     const userRef = db.collection('users').doc(userRecord.uid);
     await userRef.set({
@@ -52,42 +82,13 @@ export const createFirebaseUser = functions.https.onCall(async (data, context) =
       createdAt: admin.firestore.FieldValue.serverTimestamp(),
     });
   } catch (firestoreError) {
-    // If Firestore write fails, delete the created auth user to avoid inconsistency
+    // If Firestore write fails, delete the created auth user to avoid inconsistency.
     await admin.auth().deleteUser(userRecord.uid);
     console.error('Error creating user document in Firestore:', firestoreError);
     throw new functions.https.HttpsError(
       'internal',
       'Failed to save user data.'
     );
-  }
-
-
-  if (role === 'admin') {
-    const listUsersResult = await admin.auth().listUsers();
-    // Check if any other user is an admin
-    const hasExistingAdmin = listUsersResult.users.some(user => user.uid !== userRecord.uid && user.customClaims?.admin === true);
-
-    if (hasExistingAdmin) {
-       await admin.auth().deleteUser(userRecord.uid);
-       // Also delete the firestore doc
-       await db.collection('users').doc(userRecord.uid).delete();
-       throw new functions.https.HttpsError(
-        'permission-denied',
-        'An admin user already exists. Cannot create another.'
-      );
-    }
-    
-    try {
-      await admin.auth().setCustomUserClaims(userRecord.uid, { admin: true });
-    } catch (error) {
-      await admin.auth().deleteUser(userRecord.uid);
-      await db.collection('users').doc(userRecord.uid).delete();
-      console.error('Error setting custom claims:', error);
-      throw new functions.https.HttpsError(
-        'internal',
-        'An error occurred while setting the admin claim.'
-      );
-    }
   }
   
   return { uid: userRecord.uid };

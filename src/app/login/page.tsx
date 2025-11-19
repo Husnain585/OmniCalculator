@@ -53,12 +53,11 @@ export default function LoginPage() {
   const onSubmit: SubmitHandler<LoginFormValues> = async (data) => {
     setLoading(true);
     try {
+      // The AuthProvider will handle the redirect after this completes.
       await signInWithEmailAndPassword(auth, data.email, data.password);
-      // The redirection logic is now handled in the AuthProvider
-      // We can just refresh the router to trigger the provider's useEffect
-      router.push('/'); // Redirect to home, AuthProvider will handle admin redirect
-      router.refresh(); 
-
+      // We no longer need to manually redirect here. We just need to trigger a re-render.
+      // The router.push('/') will be handled by the AuthProvider's logic.
+      router.refresh();
     } catch (error: any) {
       console.error('Login error:', error);
       let description = 'An unexpected error occurred.';

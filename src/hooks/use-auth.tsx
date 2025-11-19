@@ -39,29 +39,31 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     const auth = getAuth(app);
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
       setUser(user);
-      setLoading(false);
+      
       if (user) {
         const token = await user.getIdToken();
         setCookie('idToken', token, 1);
         
-        // Centralized redirect logic
-        const idTokenResult = await user.getIdTokenResult(true); // Force refresh
+        // Force a refresh of the token to get the latest custom claims.
+        const idTokenResult = await user.getIdTokenResult(true);
+        
+        // This is now the source of truth for redirection.
         if (idTokenResult.claims.admin === true) {
-            if (window.location.pathname.startsWith('/admin')) {
-                // Already on an admin page, no need to redirect
-            } else {
+            if (!window.location.pathname.startsWith('/admin')) {
                 router.push('/admin');
             }
         } else {
              if (window.location.pathname.startsWith('/admin')) {
                 // Non-admin trying to access admin page, redirect to home
                 router.push('/');
+             } else {
+                router.push('/');
              }
         }
-
       } else {
         deleteCookie('idToken');
       }
+      setLoading(false);
     });
 
     return () => unsubscribe();

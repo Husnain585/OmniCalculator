@@ -15,6 +15,7 @@ import Link from 'next/link';
 import { Calculator, ShieldCheck } from 'lucide-react';
 import { Checkbox } from '@/components/ui/checkbox';
 import { hasAdminUser } from '@/lib/auth-actions';
+import { getAuth, signInWithEmailAndPassword } from 'firebase/auth';
 
 const formSchema = z.object({
   fullName: z.string().min(2, { message: 'Full name is required.' }),
@@ -33,23 +34,21 @@ export default function RegisterPage() {
   const [checkingAdmin, setCheckingAdmin] = useState(true);
 
   useEffect(() => {
-    async function checkAdmin() {
+    const checkAdmin = async () => {
+      setCheckingAdmin(true);
       try {
         const hasAdmin = await hasAdminUser();
         setShowAdminOption(!hasAdmin);
       } catch (error) {
-        console.error("Admin check failed:", error);
-        toast({
-          variant: 'destructive',
-          title: 'Error',
-          description: 'Could not verify admin status.',
-        });
+        console.error("Failed to check for existing admin:", error);
+        // Default to not showing the admin option if the check fails
+        setShowAdminOption(false);
       } finally {
         setCheckingAdmin(false);
       }
-    }
+    };
     checkAdmin();
-  }, [toast]);
+  }, []);
 
   const form = useForm<RegisterFormValues>({
     resolver: zodResolver(formSchema),
@@ -65,9 +64,10 @@ export default function RegisterPage() {
     setLoading(true);
     const functions = getFunctions(app);
     const createFirebaseUser = httpsCallable(functions, 'createFirebaseUser');
-
+    
     try {
       const role = data.registerAsAdmin ? 'admin' : 'user';
+
       await createFirebaseUser({
         email: data.email,
         password: data.password,
@@ -75,21 +75,25 @@ export default function RegisterPage() {
         role: role,
       });
 
-      toast({ title: 'Registration Successful', description: `Welcome, ${data.fullName}!` });
-      
-      // Since the function handles creation, we just need to log the user in now.
-      // Firebase doesn't automatically sign in users created via the Admin SDK.
-      // So we will redirect them to the login page to sign in with their new credentials.
+      toast({
+        title: 'Registration Successful!',
+        description: "Please sign in with your new credentials.",
+      });
+
+      // Redirect to login page to sign in with the new account.
       router.push('/login');
 
     } catch (error: any) {
       console.error('Registration error:', error);
-      let errorMessage = error.message || 'Could not create your account.';
+      let errorMessage = 'An unexpected error occurred during registration.';
       if (error.code === 'functions/already-exists') {
-          errorMessage = 'This email address is already in use by another account.';
+        errorMessage = 'This email address is already in use by another account.';
       } else if (error.code === 'functions/permission-denied') {
-          errorMessage = 'An admin user already exists. Cannot create another.';
+        errorMessage = 'An admin user already exists. Cannot create another.';
+      } else if (error.message) {
+        errorMessage = error.message;
       }
+      
       toast({
         variant: 'destructive',
         title: 'Registration Failed',
@@ -152,21 +156,24 @@ export default function RegisterPage() {
             />
 
             {checkingAdmin ? (
-              <div className="flex items-center space-x-2 h-10">Checking admin status...</div>
+              <div className="flex items-center space-x-2 h-10 text-sm text-muted-foreground">Checking admin status...</div>
             ) : (
               showAdminOption && (
                 <FormField
                   control={form.control}
                   name="registerAsAdmin"
                   render={({ field }) => (
-                    <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4">
+                    <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4 shadow-sm">
                       <FormControl>
-                        <Checkbox checked={field.value} onCheckedChange={field.onChange} disabled={loading} />
+                        <Checkbox checked={field.value} onCheckedChange={field.onChange} disabled={loading} id="admin-checkbox" />
                       </FormControl>
                       <div className="space-y-1 leading-none">
-                        <FormLabel className="flex items-center gap-2">
+                        <FormLabel htmlFor="admin-checkbox" className="flex items-center gap-2 cursor-pointer">
                           <ShieldCheck className="h-4 w-4 text-primary" /> Register as Admin
                         </FormLabel>
+                        <p className="text-xs text-muted-foreground">
+                          This will create the first administrator account. This option will disappear after the first admin is created.
+                        </p>
                       </div>
                     </FormItem>
                   )}

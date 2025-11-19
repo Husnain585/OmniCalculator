@@ -21,22 +21,22 @@ export const createFirebaseUser = functions.https.onCall(async (data, context) =
     );
   }
 
+  // If the request is to create an admin, perform checks first.
+  if (role === 'admin') {
+    // Check if any other user already has an admin claim.
+    const listUsersResult = await admin.auth().listUsers(1000);
+    const hasExistingAdmin = listUsersResult.users.some(user => user.customClaims?.admin === true);
+    
+    if (hasExistingAdmin) {
+       throw new functions.https.HttpsError(
+        'permission-denied',
+        'An admin user already exists. Cannot create another.'
+      );
+    }
+  }
+
   let userRecord;
   try {
-    // If the request is to create an admin, perform checks first.
-    if (role === 'admin') {
-      // Check if any other user already has an admin claim.
-      const listUsersResult = await admin.auth().listUsers(1000);
-      const hasExistingAdmin = listUsersResult.users.some(user => user.customClaims?.admin === true);
-      
-      if (hasExistingAdmin) {
-         throw new functions.https.HttpsError(
-          'permission-denied',
-          'An admin user already exists. Cannot create another.'
-        );
-      }
-    }
-    
     userRecord = await admin.auth().createUser({
       email,
       password,
@@ -57,20 +57,25 @@ export const createFirebaseUser = functions.https.onCall(async (data, context) =
     });
 
   } catch (error: any) {
-     // If the user was already partially created, clean up.
+    // If the user was created in Auth but something failed after, delete the auth user to clean up.
     if (userRecord) {
       await admin.auth().deleteUser(userRecord.uid).catch(e => console.error("Cleanup failed for user", userRecord.uid, e));
     }
     
+    // Handle specific, known errors first.
     if (error.code === 'auth/email-already-exists') {
       throw new functions.https.HttpsError(
         'already-exists',
         'This email address is already in use by another account.'
       );
     }
+
+    // If we threw a specific HttpsError, re-throw it.
      if (error instanceof functions.https.HttpsError) {
-        throw error; // Re-throw HttpsError exceptions directly
+        throw error;
     }
+
+    // For all other errors, log it and throw a generic internal error.
     console.error('Error creating Firebase Auth user:', error);
     throw new functions.https.HttpsError(
       'internal',
@@ -78,5 +83,6 @@ export const createFirebaseUser = functions.https.onCall(async (data, context) =
     );
   }
   
+  // Return the new user's UID on success
   return { uid: userRecord.uid };
 });

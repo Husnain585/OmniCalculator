@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState } from 'react';
@@ -56,13 +57,23 @@ export default function RegisterPage() {
     setLoading(true);
     try {
       const createFirebaseUser = httpsCallable(functions, 'createFirebaseUser');
-      const result = await createFirebaseUser(data);
       
-      // If user creation is successful, log them in
+      const payload: { [key: string]: any } = {
+        email: data.email,
+        password: data.password,
+        fullName: data.fullName,
+      };
+
+      if (data.setAdmin) {
+        payload.role = 'admin';
+      }
+
+      const result = await createFirebaseUser(payload);
+      
       if (result.data) {
         await signInWithEmailAndPassword(auth, data.email, data.password);
         toast({ title: 'Registration Successful', description: `Welcome, ${data.fullName}!` });
-        router.push(data.setAdmin ? '/admin' : '/');
+        router.push(payload.role === 'admin' ? '/admin' : '/');
         router.refresh();
       } else {
          throw new Error("User creation failed.");

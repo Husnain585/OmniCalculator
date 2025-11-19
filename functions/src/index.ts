@@ -13,7 +13,7 @@ const db = admin.firestore();
  * This handles both standard user creation and the initial admin user creation.
  */
 export const createFirebaseUser = functions.https.onCall(async (data, context) => {
-  const { email, password, fullName, setAdmin } = data;
+  const { email, password, fullName, role } = data;
 
   if (!email || !password || !fullName) {
     throw new functions.https.HttpsError(
@@ -62,7 +62,7 @@ export const createFirebaseUser = functions.https.onCall(async (data, context) =
   }
 
 
-  if (setAdmin === true) {
+  if (role === 'admin') {
     const listUsersResult = await admin.auth().listUsers();
     // Check if any other user is an admin
     const hasExistingAdmin = listUsersResult.users.some(user => user.uid !== userRecord.uid && user.customClaims?.admin === true);

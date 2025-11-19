@@ -27,8 +27,13 @@ export default function AppHeader() {
   useEffect(() => {
     async function checkAdminStatus() {
       if (user) {
-        const idTokenResult = await user.getIdTokenResult();
-        setIsAdmin(!!idTokenResult.claims.admin);
+        try {
+          const idTokenResult = await user.getIdTokenResult(true); // force refresh
+          setIsAdmin(!!idTokenResult.claims.admin);
+        } catch (error) {
+          console.error("Error fetching token result:", error);
+          setIsAdmin(false);
+        }
       } else {
         setIsAdmin(false);
       }
@@ -79,8 +84,12 @@ export default function AppHeader() {
                     </Link>
                   </DropdownMenuItem>
                 )}
-                <DropdownMenuItem>Saved Calculations</DropdownMenuItem>
-                <DropdownMenuItem>Settings</DropdownMenuItem>
+                <DropdownMenuItem asChild>
+                  <Link href="/profile">
+                    <CircleUser className="mr-2 h-4 w-4" />
+                    Profile
+                  </Link>
+                </DropdownMenuItem>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem onClick={handleLogout}>
                   <LogOut className="mr-2 h-4 w-4" />

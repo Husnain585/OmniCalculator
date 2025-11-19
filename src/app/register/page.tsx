@@ -1,11 +1,12 @@
 "use client";
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useForm, SubmitHandler } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import { getAuth, createUserWithEmailAndPassword } from 'firebase/auth';
+import { getFunctions, httpsCallable } from 'firebase/functions';
 import { app } from '@/lib/firebase';
 import { Button } from '@/components/ui/button';
 import {
@@ -19,11 +20,15 @@ import {
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
 import Link from 'next/link';
-import { Calculator } from 'lucide-react';
+import { Calculator, ShieldCheck } from 'lucide-react';
+import { Checkbox } from '@/components/ui/checkbox';
+import { hasAdminUser } from '@/lib/auth-actions';
+import { Skeleton } from '@/components/ui/skeleton';
 
 const formSchema = z.object({
   email: z.string().email({ message: 'Invalid email address.' }),
   password: z.string().min(6, { message: 'Password must be at least 6 characters.' }),
+  registerAsAdmin: z.boolean().default(false),
 });
 
 type RegisterFormValues = z.infer<typeof formSchema>;
@@ -32,20 +37,52 @@ export default function RegisterPage() {
   const router = useRouter();
   const { toast } = useToast();
   const [loading, setLoading] = useState(false);
+  const [showAdminOption, setShowAdminOption] = useState(false);
+  const [checkingAdmin, setCheckingAdmin] = useState(true);
   const auth = getAuth(app);
+  const functions = getFunctions(app);
+
+  useEffect(() => {
+    async function checkAdminExists() {
+      try {
+        const hasAdmin = await hasAdminUser();
+        setShowAdminOption(!hasAdmin);
+      } catch (error) {
+        console.error("Failed to check for admin user:", error);
+        toast({
+            variant: 'destructive',
+            title: 'Error',
+            description: 'Could not verify admin status. Please try again later.'
+        });
+      } finally {
+        setCheckingAdmin(false);
+      }
+    }
+    checkAdminExists();
+  }, [toast]);
 
   const form = useForm<RegisterFormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       email: '',
       password: '',
+      registerAsAdmin: false,
     },
   });
 
   const onSubmit: SubmitHandler<RegisterFormValues> = async (data) => {
     setLoading(true);
     try {
-      await createUserWithEmailAndPassword(auth, data.email, data.password);
+      const userCredential = await createUserWithEmailAndPassword(auth, data.email, data.password);
+      const user = userCredential.user;
+
+      if (data.registerAsAdmin) {
+        const setAdminClaim = httpsCallable(functions, 'setAdminClaim');
+        await setAdminClaim({ uid: user.uid });
+        // The token needs to be refreshed to get the new custom claim
+        await user.getIdToken(true);
+      }
+      
       router.push('/');
       router.refresh();
     } catch (error: any) {
@@ -108,6 +145,36 @@ export default function RegisterPage() {
                     </FormItem>
                     )}
                 />
+                
+                {checkingAdmin ? (
+                  <div className="flex items-center space-x-2">
+                    <Skeleton className="h-4 w-4" />
+                    <Skeleton className="h-4 w-32" />
+                  </div>
+                ) : (
+                  showAdminOption && (
+                  <FormField
+                    control={form.control}
+                    name="registerAsAdmin"
+                    render={({ field }) => (
+                      <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4">
+                         <FormControl>
+                          <Checkbox
+                            checked={field.value}
+                            onCheckedChange={field.onChange}
+                            disabled={loading}
+                          />
+                        </FormControl>
+                        <div className="space-y-1 leading-none">
+                          <FormLabel className="flex items-center gap-2">
+                             <ShieldCheck className="h-4 w-4 text-primary" /> Register as Admin
+                          </FormLabel>
+                        </div>
+                      </FormItem>
+                    )}
+                  />
+                ))}
+
                 <Button type="submit" className="w-full" disabled={loading}>
                     {loading ? 'Creating Account...' : 'Create Account'}
                 </Button>

@@ -100,11 +100,8 @@ export default function ProfilePage() {
         <CardContent className="space-y-4">
             <div className="grid gap-2">
                 <div className="font-semibold">Role</div>
-                {isAdmin ? (
-                  <Badge className="w-fit"><Shield className="mr-2 h-4 w-4" />Admin</Badge>
-                ) : (
-                  <Badge variant="secondary" className="w-fit">User</Badge>
-                )}
+                
+                {user.uid}
             </div>
             <div className="grid gap-2">
                 <div className="font-semibold">User ID</div>

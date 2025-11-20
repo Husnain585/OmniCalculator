@@ -1,18 +1,12 @@
 'use server';
-
 import * as functions from 'firebase-functions';
 import * as admin from 'firebase-admin';
 
-// Initialize admin only once
-if (admin.apps.length === 0) {
+if (!admin.apps.length) {
   admin.initializeApp();
 }
 const db = admin.firestore();
 
-/**
- * A callable Cloud Function to create a new Firebase user.
- * This handles both standard user creation and the initial admin user creation.
- */
 export const createFirebaseUser = functions.https.onCall(async (data, context) => {
   const { email, password, fullName, role } = data;
 
@@ -23,14 +17,11 @@ export const createFirebaseUser = functions.https.onCall(async (data, context) =
     );
   }
 
-  // If the request is to create an admin, perform checks first.
   if (role === 'admin') {
-    // Check if any other user already has an admin claim.
-    const listUsersResult = await admin.auth().listUsers(1000);
-    const hasExistingAdmin = listUsersResult.users.some(user => user.customClaims?.admin === true);
-    
-    if (hasExistingAdmin) {
-       throw new functions.https.HttpsError(
+    const usersList = await admin.auth().listUsers(1000);
+    const adminExists = usersList.users.some(u => u.customClaims?.admin);
+    if (adminExists) {
+      throw new functions.https.HttpsError(
         'permission-denied',
         'An admin user already exists. Cannot create another.'
       );
@@ -39,52 +30,27 @@ export const createFirebaseUser = functions.https.onCall(async (data, context) =
 
   let userRecord;
   try {
-    userRecord = await admin.auth().createUser({
-      email,
-      password,
-      displayName: fullName,
-    });
-
-    // If an admin was requested, set the custom claim for the new user.
+    userRecord = await admin.auth().createUser({ email, password, displayName: fullName });
     if (role === 'admin') {
       await admin.auth().setCustomUserClaims(userRecord.uid, { admin: true });
     }
 
-    // Create user document in Firestore regardless of role.
-    const userRef = db.collection('users').doc(userRecord.uid);
-    await userRef.set({
+    await db.collection('users').doc(userRecord.uid).set({
       email: userRecord.email,
       fullName: userRecord.displayName,
+      isAdmin: role === 'admin' ? true : false,
       createdAt: admin.firestore.FieldValue.serverTimestamp(),
     });
 
   } catch (error: any) {
-    // If the user was created in Auth but something failed after, delete the auth user to clean up.
-    if (userRecord) {
-      await admin.auth().deleteUser(userRecord.uid).catch(e => console.error("Cleanup failed for user", userRecord.uid, e));
-    }
-    
-    // Handle specific, known errors first.
+    if (userRecord) await admin.auth().deleteUser(userRecord.uid).catch(console.error);
+
     if (error.code === 'auth/email-already-exists') {
-      throw new functions.https.HttpsError(
-        'already-exists',
-        'This email address is already in use by another account.'
-      );
+      throw new functions.https.HttpsError('already-exists', 'Email already in use.');
     }
 
-    // If we threw a specific HttpsError, re-throw it.
-     if (error instanceof functions.https.HttpsError) {
-        throw error;
-    }
-
-    // For all other errors, log it and throw a generic internal error.
-    console.error('Error creating Firebase Auth user:', error);
-    throw new functions.https.HttpsError(
-      'internal',
-      error.message || 'Failed to create user account.'
-    );
+    throw new functions.https.HttpsError('internal', error.message || 'Failed to create user.');
   }
-  
-  // Return the new user's UID on success
+
   return { uid: userRecord.uid };
 });
